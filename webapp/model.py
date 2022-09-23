@@ -10,10 +10,10 @@ class User(db.Model, UserMixin):
     При регистрации обязательные поля - email и пароль'''
 
     id = db.Column(db.Integer, primary_key=True)
-    email = db.Column(db.String(60), index=True, unique=True, nullable=False)
-    phone_number = db.Column(db.String(12), index=True, unique=True, nullable=True)
-    full_name = db.Column(db.String, nullable=True)
-    shipping_adress = db.Column(db.String, nullable=True)
+    email = db.Column(db.String(60), unique=True, nullable=False)
+    phone_number = db.Column(db.String(12), unique=True, nullable=True)
+    full_name = db.Column(db.String(100), nullable=True)
+    shipping_adress = db.Column(db.String(200), nullable=True)
     password = db.Column(db.String(128), nullable=False)
     role = db.Column(db.String(20), index=True)
 
