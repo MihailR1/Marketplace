@@ -1,7 +1,7 @@
 from flask import Flask, render_template
 from flask_migrate import Migrate
 
-from webapp.model import db
+from webapp.model import db, Category, Product
 
 
 def create_app():

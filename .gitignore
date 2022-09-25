@@ -3,6 +3,11 @@ __pycache__/
 *.py[cod]
 *$py.class
 
+# User files
+test.py
+run.bat
+webapp.db
+
 # C extensions
 *.so
 
@@ -66,6 +71,7 @@ db.sqlite3-journal
 # Flask stuff:
 instance/
 .webassets-cache
+.flaskenv
 
 # Scrapy stuff:
 .scrapy
