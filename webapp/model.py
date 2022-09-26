@@ -11,7 +11,6 @@ class User(db.Model, UserMixin):
     '''Все данные о пользователе, которые будут храниться в БД.
     При регистрации обязательные поля - email и пароль'''
 
-    __tablename__ = 'all_users'
     id = db.Column(db.Integer, primary_key=True)
     email = db.Column(db.String(60), unique=True, nullable=False)
     phone_number = db.Column(db.String(12), unique=True, nullable=True)
@@ -41,11 +40,10 @@ class Category(db.Model, BaseNestedSets):
 
 
 class Product(db.Model):
-    __tablename__ = 'products'
     id = db.Column(db.Integer, primary_key=True)
     category_id = db.Column(db.Integer, db.ForeignKey('categories.id'))
     category = db.Column(db.String(50), db.ForeignKey('categories.name'))
-    user_id = db.Column(db.Integer, db.ForeignKey(User.id, ondelete='CASCADE'))
+    user = relationship('User', backref='products')  # у класса User появилось свойство products
     name = db.Column(db.String(475), index=True, unique=True, nullable=False)
     price = db.Column(db.Integer, nullable=False)
     photos_path = db.Column(db.String, nullable=False)  # Путь до всех фото каталога
