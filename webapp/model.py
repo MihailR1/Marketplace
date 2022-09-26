@@ -1,5 +1,6 @@
 from flask_login import UserMixin
 from flask_sqlalchemy import SQLAlchemy
+from sqlalchemy.orm import relationship
 from werkzeug.security import generate_password_hash, check_password_hash
 from sqlalchemy_mptt.mixins import BaseNestedSets
 
@@ -18,7 +19,6 @@ class User(db.Model, UserMixin):
     shipping_adress = db.Column(db.String(200), nullable=True)
     password = db.Column(db.String(128), nullable=False)
     role = db.Column(db.String(20), index=True)
-    created_products = db.relationship("Product", lazy='dynamic')
 
     def set_password(self, password):
         self.password = generate_password_hash(password)
@@ -45,7 +45,7 @@ class Product(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     category_id = db.Column(db.Integer, db.ForeignKey('categories.id'))
     category = db.Column(db.String(50), db.ForeignKey('categories.name'))
-    created_by = db.Column(db.Integer, db.ForeignKey('all_users.id'))
+    user_id = db.Column(db.Integer, db.ForeignKey(User.id, ondelete='CASCADE'))
     name = db.Column(db.String(475), index=True, unique=True, nullable=False)
     price = db.Column(db.Integer, nullable=False)
     photos_path = db.Column(db.String, nullable=False)  # Путь до всех фото каталога
