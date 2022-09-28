@@ -53,4 +53,4 @@ class Product(db.Model):
     size = db.Column(db.String(10))
 
     def __repr__(self):
-        return f'<Product name {self.name}, id {self.id}, category {self.category_id}>'
+        return f'<Product name {self.name}, id {self.id}, category {self.category}>'
