@@ -33,7 +33,6 @@ class Category(db.Model, BaseNestedSets):
     __tablename__ = 'categories'
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(50), index=True, unique=True)
-    products = db.relationship("Product", backref='item', lazy='dynamic')
 
     def __repr__(self):
         return f'<Category {self.name}>'
@@ -41,9 +40,9 @@ class Category(db.Model, BaseNestedSets):
 
 class Product(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    category_id = db.Column(db.Integer, db.ForeignKey('categories.id'))
-    category = db.Column(db.String(50), db.ForeignKey('categories.name'))
-    user = relationship('User', backref='products')  # у класса User появилось свойство products
+    category = db.Column(db.String(50), db.ForeignKey(Category.name))
+    user_id = db.Column(db.Integer, db.ForeignKey(User.id))
+    user = relationship('User', backref='products')
     name = db.Column(db.String(475), index=True, unique=True, nullable=False)
     price = db.Column(db.Integer, nullable=False)
     photos_path = db.Column(db.String, nullable=False)  # Путь до всех фото каталога
