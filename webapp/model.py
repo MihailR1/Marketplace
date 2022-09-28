@@ -40,10 +40,11 @@ class Category(db.Model, BaseNestedSets):
 
 class Product(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    category = db.Column(db.String(50), db.ForeignKey(Category.name))
+    category_id = db.Column(db.Integer, db.ForeignKey(Category.id))
+    category = relationship('Category', backref='products')
     user_id = db.Column(db.Integer, db.ForeignKey(User.id))
     user = relationship('User', backref='products')
-    name = db.Column(db.String(475), index=True, unique=True, nullable=False)
+    name = db.Column(db.String(75), index=True, unique=True, nullable=False)
     price = db.Column(db.Integer, nullable=False)
     photos_path = db.Column(db.String, nullable=False)  # Путь до всех фото каталога
     description = db.Column(db.Text)
