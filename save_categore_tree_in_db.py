@@ -8,15 +8,13 @@ from webapp import create_app
 from webapp.db import db
 from webapp.marketplace.models import Category
 
-app = create_app()
-
 
 def data_from_db():
     """
     Функция получает и возвращает актуальную информацию из БД
     (Чтобы не писать такой длинный запрос каждый раз)
     """
-    
+
     return Category.query.filter(Category.name.isnot(None)).all()
 
 
@@ -25,7 +23,7 @@ def get_category_name_and_id(data_from_db):
     Функция сохраняет в словарь название категории и номер id
     и возвращает словарь
     """
-    
+
     result = {category.name: category.id for category in data_from_db}
     return result
 
@@ -35,7 +33,7 @@ def check_root_category(data_from_db):
     Проверяет есть ли главный раздел в БД,
     если нету, то создает и возвращает его
     """
-    
+
     root_category = None
 
     for category in data_from_db:
@@ -67,7 +65,7 @@ def save_first_category_branch(file):
     used_categories = set()
 
     for _, main, sub1_category, _ in file.itertuples():
-        if sub1_category not in categories_name and sub1_category not in used_categories:
+        if sub1_category not in categories_name.keys() and sub1_category not in used_categories:
             result = Category(name=sub1_category, parent_id=categories_name[main])
             used_categories.add(sub1_category)
             db.session.add(result)
@@ -81,13 +79,15 @@ def save_second_category_branch(file):
     used_categories = set()
 
     for _, main, sub1_category, sub2_category in file.itertuples():
-        if sub2_category not in categories_name and sub2_category not in used_categories:
+        if sub2_category not in categories_name.keys() and sub2_category not in used_categories:
             result = Category(name=sub2_category, parent_id=categories_name[sub1_category])
             used_categories.add(sub2_category)
             db.session.add(result)
 
     db.session.commit()
 
+
+app = create_app()
 
 with app.app_context():
     category_tree_data = pandas.read_excel('category_tree.xlsx')
