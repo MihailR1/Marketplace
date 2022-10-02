@@ -1,5 +1,5 @@
 from flask import Blueprint, flash, render_template, redirect, url_for
-from flask_login import current_user
+from flask_login import current_user, login_required
 
 from webapp.marketplace.forms import AddNewProductForm
 from webapp.model import Category, db, Product
@@ -13,20 +13,18 @@ def index():
     return render_template('marketplace/index.html', page_title=title)
 
 
+@login_required
 @blueprint.route('/add_product')
 def add_product():
-    if not current_user.is_authenticated:
-        return redirect(url_for('marketplace.login'))
     title = 'Добавить товар'
     form = AddNewProductForm()
-    form.category.choices = [(category.id, category.name) for category in Category.query.all()]
     return render_template('marketplace/add_product.html', page_title=title, form=form)
 
 
+@login_required
 @blueprint.route('/process_add_product', methods=['POST'])
 def process_add_product():
     form = AddNewProductForm()
-    form.category.choices = [(category.id, category.name) for category in Category.query.all()]
     if form.validate_on_submit():
         new_product = Product(
             category_id = form.category.data,
@@ -38,11 +36,8 @@ def process_add_product():
             brand_name = form.brand_name.data,
             color = form.color.data,
             gender = form.gender.data,
-            size = form.size.data
-            )
-    
-        db.session.add(new_product)
-        db.session.commit()
+            size = form.size.data)
+
         flash('Вы добавили товар')
         return redirect(url_for('marketplace.index'))
     else:

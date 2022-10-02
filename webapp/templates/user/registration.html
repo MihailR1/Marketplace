@@ -1,7 +1,6 @@
 {% extends "base.html" %}
 
 {% block content %}
-<h1>{{ page_title }}</h1>
     {% with messages = get_flashed_messages() %}
         {% if messages %}
             {% for message in messages %}
