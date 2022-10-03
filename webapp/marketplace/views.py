@@ -36,8 +36,10 @@ def process_add_product():
             brand_name = form.brand_name.data,
             color = form.color.data,
             gender = form.gender.data,
-            size = form.size.data)
-
+            size = form.size.data
+        )
+        db.session.add(new_product)
+        db.session.commit()
         flash('Вы добавили товар')
         return redirect(url_for('marketplace.index'))
     else:
