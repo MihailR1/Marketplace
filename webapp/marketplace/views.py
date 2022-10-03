@@ -1,16 +1,30 @@
 from flask import Blueprint, flash, render_template, redirect, url_for
 from flask_login import current_user, login_required
+from flask import abort, Blueprint, render_template
 
 from webapp.marketplace.forms import AddNewProductForm
 from webapp.model import Category, db, Product
+from webapp.marketplace.models import Product
 
 
 blueprint = Blueprint('marketplace', __name__)
 
+
 @blueprint.route('/')
 def index():
     title = "Каталог товаров"
-    return render_template('marketplace/index.html', page_title=title)
+    products = Product.query.all()
+    return render_template('marketplace/index.html', page_title=title, products=products)
+
+
+@blueprint.route('/product/<int:product_id>')
+def product_page(product_id):
+    product = Product.query.filter(Product.id == product_id).first()
+
+    if not product:
+        abort(404)
+
+    return render_template('marketplace/product_page.html', page_title='Карточка товара', product=product)
 
 
 @login_required
