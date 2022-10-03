@@ -10,6 +10,7 @@ from webapp.marketplace.models import Product
 blueprint = Blueprint('marketplace', __name__)
 
 
+
 @blueprint.route('/')
 def index():
     title = "Каталог товаров"
