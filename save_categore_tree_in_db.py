@@ -45,7 +45,7 @@ def save_first_category_branch(file):
     categories_name = get_category_name_and_id(actual_db_data)
     used_categories = set()
 
-    for _, main, sub1_category, _ in file.itertuples():
+    for _, main, sub1_category, *_ in file.itertuples():
         if sub1_category not in categories_name.keys() and sub1_category not in used_categories:
             result = Category(name=sub1_category, parent_id=categories_name[main])
             used_categories.add(sub1_category)
@@ -59,8 +59,10 @@ def save_second_category_branch(file):
     categories_name = get_category_name_and_id(actual_db_data)
     used_categories = set()
 
-    for _, main, sub1_category, sub2_category in file.itertuples():
-        if sub2_category not in categories_name.keys() and sub2_category not in used_categories:
+    for _, main, sub1_category, sub2_category, *_ in file.itertuples():
+        if (sub2_category not in categories_name.keys()
+                and sub2_category not in used_categories
+                and sub2_category != ''):
             result = Category(name=sub2_category, parent_id=categories_name[sub1_category])
             used_categories.add(sub2_category)
             db.session.add(result)
@@ -68,10 +70,28 @@ def save_second_category_branch(file):
     db.session.commit()
 
 
-app = create_app()
+def save_thrid_category_branch(file):
+    actual_db_data = data_from_db()
+    categories_name = get_category_name_and_id(actual_db_data)
+    used_categories = set()
 
-with app.app_context():
-    category_tree_data = pandas.read_excel('category_tree.xlsx')
-    save_main_category(category_tree_data)
-    save_first_category_branch(category_tree_data)
-    save_second_category_branch(category_tree_data)
+    for _, main, sub1_category, sub2_category, sub3_category, *_ in file.itertuples():
+        if (sub3_category not in categories_name.keys()
+                and sub3_category not in used_categories
+                and sub3_category != ''):
+            result = Category(name=sub3_category, parent_id=categories_name[sub2_category])
+            used_categories.add(sub3_category)
+            db.session.add(result)
+
+    db.session.commit()
+
+
+if __name__ == '__main__':
+    app = create_app()
+
+    with app.app_context():
+        category_tree_data = pandas.read_excel('category_tree.xlsx', na_filter=False)
+        save_main_category(category_tree_data)
+        save_first_category_branch(category_tree_data)
+        save_second_category_branch(category_tree_data)
+        save_thrid_category_branch(category_tree_data)
