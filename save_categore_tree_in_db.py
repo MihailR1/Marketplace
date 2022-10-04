@@ -20,7 +20,7 @@ def data_from_db():
 
 def get_category_name_and_id(data_from_db):
     """
-    Функция сохраняет в словарь название категории и номер id
+    Функция сохраняет название категории и номер id
     и возвращает словарь
     """
 
@@ -28,32 +28,13 @@ def get_category_name_and_id(data_from_db):
     return result
 
 
-def check_root_category(data_from_db):
-    """
-    Проверяет есть ли главный раздел в БД,
-    если нету, то создает и возвращает его
-    """
-
-    root_category = None
-
-    for category in data_from_db:
-        if category.tree_id == 1 and category.parent_id is None:
-            root_category = category
-
-    if not root_category:
-        root_category = Category(name="Root_catalog")
-        db.session.add(root_category)
-        db.session.commit()
-
-    return root_category
-
-
-def save_main_category(file, root_category, db_data):
-    categories_name = get_category_name_and_id(db_data)
+def save_main_category(file):
+    actual_db_data = data_from_db()
+    categories_name = get_category_name_and_id(actual_db_data)
 
     for main_category in file.main.unique():
         if main_category not in categories_name.keys():
-            main = Category(name=main_category, parent_id=root_category.id)
+            main = Category(name=main_category)
             db.session.add(main)
 
     db.session.commit()
@@ -91,8 +72,6 @@ app = create_app()
 
 with app.app_context():
     category_tree_data = pandas.read_excel('category_tree.xlsx')
-    db_data = data_from_db()
-    root = check_root_category(db_data)
-    save_main_category(category_tree_data, root, db_data)
+    save_main_category(category_tree_data)
     save_first_category_branch(category_tree_data)
     save_second_category_branch(category_tree_data)
