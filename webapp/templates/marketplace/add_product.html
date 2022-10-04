@@ -47,6 +47,10 @@
                     {{ form.size() }}
                 </div>
                 <div class="form-group">
+                    {{ form.files_img.label }}<br>
+                    {{ form.files_img() }}
+                </div>
+                <div class="form-group">
                     {{ form.submit() }}
                 </div>
             </form>
