@@ -1,0 +1,48 @@
+<div class="dropdown">
+    <button class="btn btn-primary dropdown-toggle" type="button" id="dropdownMenuButton"
+            data-mdb-toggle="dropdown" data-bs-toggle="dropdown" aria-expanded="false">Каталог
+    </button>
+    <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+        {% set categories = dropdown_categories() %}
+        {% for category in categories %}
+            {% if not category.parent_id %}
+                <li>
+                    <a class="dropdown-item" href="{{ url_for('marketplace.category_page', category_id=category.id) }}">
+                        {{ category.name }} &raquo;
+                    </a>
+                    <ul class="dropdown-menu dropdown-submenu">
+                        {% for sub1 in categories %}
+                            {% if sub1.parent_id == category.id %}
+                                <li>
+                                    <a class="dropdown-item"
+                                       href="{{ url_for('marketplace.category_page', category_id=sub1.id) }}">{{ sub1.name }}
+                                        &raquo; </a>
+                                    <ul class="dropdown-menu dropdown-submenu">
+                                        {% for sub2 in categories %}
+                                            {% if sub2.parent_id == sub1.id %}
+                                                <li>
+                                                    <a class="dropdown-item"
+                                                       href="{{ url_for('marketplace.category_page', category_id=sub2.id) }}">{{ sub2.name }}</a>
+                                                    <ul class="">
+                                                        {% for sub3 in categories %}
+                                                            {% if sub3.parent_id == sub2.id %}
+                                                                <li>
+                                                                    <a class="dropdown-item"
+                                                                       href="{{ url_for('marketplace.category_page', category_id=sub3.id) }}">{{ sub3.name }}</a>
+                                                                </li>
+                                                            {% endif %}
+                                                        {% endfor %}
+                                                    </ul>
+                                                </li>
+                                            {% endif %}
+                                        {% endfor %}
+                                    </ul>
+                                </li>
+                            {% endif %}
+                        {% endfor %}
+                    </ul>
+                </li>
+            {% endif %}
+        {% endfor %}
+    </ul>
+</div>

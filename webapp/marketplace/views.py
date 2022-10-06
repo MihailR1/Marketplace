@@ -3,12 +3,9 @@ from flask_login import current_user, login_required
 from flask import abort, Blueprint, render_template
 
 from webapp.marketplace.forms import AddNewProductForm
-from webapp.model import Category, db, Product
-from webapp.marketplace.models import Product
-
+from webapp.marketplace.models import Category, db, Product
 
 blueprint = Blueprint('marketplace', __name__)
-
 
 
 @blueprint.route('/')
@@ -28,6 +25,27 @@ def product_page(product_id):
     return render_template('marketplace/product_page.html', page_title='Карточка товара', product=product)
 
 
+@blueprint.context_processor
+def utility_processor():
+    def dropdown_categories():
+        categories = Category.query.all()
+        return categories
+
+    return dict(dropdown_categories=dropdown_categories)
+
+
+@blueprint.route('/category/<int:category_id>')
+def category_page(category_id):
+    category = Category.query.filter(Category.id == category_id).first()
+    products = Product.query.filter(Product.category_id == category_id).all()
+    title = f'Раздел товаров: {category.name}'
+
+    if not category:
+        abort(404)
+
+    return render_template('marketplace/category_page.html', page_title=title, products=products)
+
+
 @login_required
 @blueprint.route('/add_product')
 def add_product():
@@ -42,16 +60,16 @@ def process_add_product():
     form = AddNewProductForm()
     if form.validate_on_submit():
         new_product = Product(
-            category_id = form.category.data,
-            user_id = current_user.id,
+            category_id=form.category.data,
+            user_id=current_user.id,
             name=form.name.data,
-            price = form.price.data,
-            photos_path = 'asdasdas',
-            description = form.description.data,
-            brand_name = form.brand_name.data,
-            color = form.color.data,
-            gender = form.gender.data,
-            size = form.size.data
+            price=form.price.data,
+            photos_path='asdasdas',
+            description=form.description.data,
+            brand_name=form.brand_name.data,
+            color=form.color.data,
+            gender=form.gender.data,
+            size=form.size.data
         )
         db.session.add(new_product)
         db.session.commit()
