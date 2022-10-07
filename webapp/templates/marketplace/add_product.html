@@ -12,7 +12,7 @@
     {% endwith %}
     <div class="row">
         <div class="col-4">
-            <form action="{{ url_for('marketplace.process_add_product') }}" method="POST">
+            <form action="{{ url_for('marketplace.process_add_product') }}" method="POST" enctype="multipart/form-data">
                 {{ form.hidden_tag() }}
                 <div class="form-group">
                     {{ form.category.label }}
@@ -47,8 +47,8 @@
                     {{ form.size() }}
                 </div>
                 <div class="form-group">
-                    {{ form.files_img.label }}<br>
-                    {{ form.files_img() }}
+                    {{ form.photos.label }}<br>
+                    {{ form.photos() }}
                 </div>
                 <div class="form-group">
                     {{ form.submit() }}
