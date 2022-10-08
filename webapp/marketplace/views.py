@@ -1,7 +1,6 @@
 from flask import Blueprint, flash, render_template, redirect, url_for, abort
 from flask_login import current_user, login_required
 
-from webapp import cache
 from webapp.marketplace.forms import AddNewProductForm
 from webapp.marketplace.models import Category, db, Product
 
@@ -24,15 +23,6 @@ def product_page(product_id):
 
     return render_template('marketplace/product_page.html', page_title='Карточка товара', product=product)
 
-@cache.cached(timeout=18000, key_prefix='dropdown_categories')
-@blueprint.context_processor
-def utility_processor():
-    def dropdown_categories():
-        categories = Category.query.filter(Category.parent_id.is_(None)).all()
-        result = [sub_categories for category in categories for sub_categories in category.drilldown_tree()]
-        return result
-
-    return dict(dropdown_categories=dropdown_categories)
 
 @blueprint.route('/category/<int:category_id>')
 def category_page(category_id):
