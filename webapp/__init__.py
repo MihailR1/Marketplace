@@ -27,9 +27,9 @@ def create_app():
     def load_user(user_id):
         return User.query.get(user_id)
 
-    @cache.cached(timeout=18000, key_prefix='dropdown_categories')
     @app.context_processor
     def utility_processor():
+        @cache.cached(timeout=18000, key_prefix='dropdown_categories')
         def dropdown_categories():
             categories = Category.query.filter(Category.parent_id.is_(None)).all()
             result = [sub_categories for category in categories for sub_categories in category.drilldown_tree()]
