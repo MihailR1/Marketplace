@@ -5,7 +5,7 @@ from flask import abort, Blueprint, render_template
 from webapp.marketplace.forms import AddNewProductForm
 from webapp.marketplace.models  import Product, Photo
 from webapp.db import db
-from webapp.services.service_photo import allowed_file, save_files
+from webapp.services.service_photo import is_extension_allowed, save_files
 
 
 blueprint = Blueprint('marketplace', __name__)
@@ -44,7 +44,7 @@ def process_add_product():
     if form.validate_on_submit():
 
         photos = form.photos.data
-        if allowed_file(photos):
+        if is_extension_allowed(photos):
             flash('Можно добавить изображения с расширеним png, jpg, jpeg')
             return redirect(url_for('marketplace.add_product'))
 

@@ -4,11 +4,13 @@ import os
 from webapp.config import UPLOAD_PATH, ALLOWED_IMAGE
 
 
-def allowed_file(photos):
+def is_extension_allowed(photos):
     for photo in photos:
         photo_name = photo.filename
         extension = photo_name.split('.')[-1]
-        if extension not in ALLOWED_IMAGE:
+        if extension in ALLOWED_IMAGE:
+            return False
+        else:
             return True
             
 
@@ -21,7 +23,7 @@ def save_files(photos):
         unique_filename = str(uuid.uuid4())
         extension = photo_name.split('.')[-1]
         photo_name_ext = f'{unique_filename}.{extension}'
-        photo.save(os.path.join(UPLOAD_PATH, 'media', photo_name_ext))
-        photos_path.append(os.path.join(UPLOAD_PATH, 'media', photo_name_ext))
+        photo.save(os.path.join(UPLOAD_PATH, photo_name_ext))
+        photos_path.append(os.path.join(UPLOAD_PATH, photo_name_ext))
     
     return photos_path
