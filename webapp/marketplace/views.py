@@ -1,9 +1,8 @@
-from flask import Blueprint, flash, render_template, redirect, url_for
+from flask import Blueprint, flash, render_template, redirect, url_for, abort
 from flask_login import current_user, login_required
-from flask import abort, Blueprint, render_template
 
 from webapp.marketplace.forms import AddNewProductForm
-from webapp.marketplace.models  import Product, Photo
+from webapp.marketplace.models  import Product, Photo, Category
 from webapp.db import db
 from webapp.services.service_photo import is_extension_allowed, save_files
 
@@ -26,6 +25,18 @@ def product_page(product_id):
         abort(404)
 
     return render_template('marketplace/product_page.html', page_title='Карточка товара', product=product)
+
+
+@blueprint.route('/category/<int:category_id>')
+def category_page(category_id):
+    category = Category.query.filter(Category.id == category_id).first()
+    products = Product.query.filter(Product.category_id == category_id).all()
+    title = f'Раздел товаров: {category.name}'
+
+    if not category:
+        abort(404)
+
+    return render_template('marketplace/category_page.html', page_title=title, products=products)
 
 
 @login_required
@@ -51,8 +62,8 @@ def process_add_product():
         photos_path = save_files(photos)
 
         new_product = Product(
-            category_id = form.category.data,
-            user_id = current_user.id,
+            category_id=form.category.data,
+            user_id=current_user.id,
             name=form.name.data,
             price = form.price.data,
             description = form.description.data,
