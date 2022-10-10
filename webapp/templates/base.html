@@ -15,6 +15,7 @@
   <body>
     {% include 'menu.html' %}
     <div class="container">
+    {% include 'inform_messages.html' %}
         <h1>{{ page_title }}</h1>
         {% block content %}{% endblock %}
     </div>

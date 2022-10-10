@@ -1,7 +1,7 @@
 from flask import Blueprint, flash, render_template, redirect, url_for, abort
 from flask_login import current_user, login_required
 
-from webapp.marketplace.forms import AddNewProductForm
+from webapp.marketplace.forms import AddNewProductForm, SearchForm
 from webapp.marketplace.models import Category, db, Product
 
 blueprint = Blueprint('marketplace', __name__)
@@ -9,9 +9,32 @@ blueprint = Blueprint('marketplace', __name__)
 
 @blueprint.route('/')
 def index():
+    search_input_form = SearchForm()
     title = "Каталог товаров"
     products = Product.query.all()
-    return render_template('marketplace/index.html', page_title=title, products=products)
+    return render_template('marketplace/index.html', page_title=title, products=products, form=search_input_form)
+
+
+@blueprint.route('/search', methods=['POST'])
+def search_result():
+    form = SearchForm()
+    if form.validate_on_submit():
+        found_products = []
+        search_string = form.search_input.data
+        if search_string:
+            found_products = Product.query.filter(Product.name.like(f'%{search_string}%')).all()
+            title = f'По запросу «{search_string}» найдено {len(found_products)} товаров'
+            return render_template('search.html', page_title=title, products=found_products)
+
+        if not found_products or not search_string:
+            title = 'Не нашли подходящих товаров'
+            return render_template('search.html', page_title=title)
+
+    else:
+        for field, errors in form.errors.items():
+            for error in errors:
+                flash(f'Ошибка в поле {getattr(form, field).label.text}: {error}')
+    return redirect(url_for('marketplace.index'))
 
 
 @blueprint.route('/product/<int:product_id>')
