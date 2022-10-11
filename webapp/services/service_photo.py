@@ -9,9 +9,9 @@ def is_extension_allowed(photos):
         photo_name = photo.filename
         extension = photo_name.split('.')[-1]
         if extension in ALLOWED_IMAGE:
-            return False
-        else:
             return True
+        else:
+            return False
             
 
 def save_files(photos):

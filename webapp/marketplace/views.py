@@ -55,7 +55,7 @@ def process_add_product():
     if form.validate_on_submit():
 
         photos = form.photos.data
-        if is_extension_allowed(photos):
+        if is_extension_allowed(photos) == False:
             flash('Можно добавить изображения с расширеним png, jpg, jpeg')
             return redirect(url_for('marketplace.add_product'))
 
