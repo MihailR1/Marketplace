@@ -7,6 +7,7 @@ from webapp.user.models import User
 
 class Category(db.Model, BaseNestedSets):
     __tablename__ = 'categories'
+
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(50), index=True, unique=True)
 
@@ -15,6 +16,8 @@ class Category(db.Model, BaseNestedSets):
 
 
 class Product(db.Model):
+    __tablename__ = 'products'
+
     id = db.Column(db.Integer, primary_key=True)
     category_id = db.Column(db.Integer, db.ForeignKey(Category.id))
     category = relationship('Category', backref='products')
@@ -22,7 +25,6 @@ class Product(db.Model):
     user = relationship('User', backref='products')
     name = db.Column(db.String(75), index=True, unique=True, nullable=False)
     price = db.Column(db.Integer, nullable=False)
-    photos_path = db.Column(db.String, nullable=False)  # Путь до всех фото каталога
     description = db.Column(db.Text)
     brand_name = db.Column(db.String(40))
     color = db.Column(db.String(20))
@@ -31,3 +33,13 @@ class Product(db.Model):
 
     def __repr__(self):
         return f'<Product name {self.name}, id {self.id}, category {self.category}>'
+
+
+class Photo(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    product_id = db.Column(db.Integer, db.ForeignKey(Product.id))
+    product = relationship('Product', backref='photos')
+    photos_path = db.Column(db.String, nullable=False)
+
+    def __repr__(self):
+        return f'<Photo {self.photos_path}, id {self.id}, product {self.product}>'

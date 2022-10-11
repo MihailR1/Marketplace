@@ -1,5 +1,5 @@
 from flask_wtf import FlaskForm
-from wtforms import IntegerField, StringField, SubmitField, TextAreaField, SelectField
+from wtforms import IntegerField, StringField, SubmitField, TextAreaField, SelectField, MultipleFileField
 from wtforms.validators import DataRequired, NumberRange
 
 from webapp.marketplace.models import Category
@@ -16,8 +16,10 @@ class AddNewProductForm(FlaskForm):
     color = StringField('Цвет', render_kw={"class": "form-control"})
     gender = SelectField('Пол', choices=['мужской', 'женский', 'унисекс'], render_kw={"class": "form-control"})
     size = StringField('Размер', render_kw={"class": "form-control"})
+    photos = MultipleFileField('Добавить фото',  validators=[DataRequired()])
     submit = SubmitField('Отправить!', render_kw={"class": "btn btn-primary"})
 
     def __init__(self, *args, **kwargs):
         super(AddNewProductForm, self).__init__(*args, **kwargs)
         self.category.choices = [(category.id, category.name) for category in Category.query.all()]
+    

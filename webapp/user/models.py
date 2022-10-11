@@ -7,6 +7,7 @@ from webapp.db import db
 class User(db.Model, UserMixin):
     '''Все данные о пользователе, которые будут храниться в БД.
     При регистрации обязательные поля - email и пароль'''
+    __tablename__ = 'users'
 
     id = db.Column(db.Integer, primary_key=True)
     email = db.Column(db.String(60), unique=True, nullable=False)

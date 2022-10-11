@@ -2,7 +2,10 @@ from flask import Blueprint, flash, render_template, redirect, url_for, abort
 from flask_login import current_user, login_required
 
 from webapp.marketplace.forms import AddNewProductForm
-from webapp.marketplace.models import Category, db, Product
+from webapp.marketplace.models  import Product, Photo, Category
+from webapp.db import db
+from webapp.services.service_photo import is_extension_allowed, save_files
+
 
 blueprint = Blueprint('marketplace', __name__)
 
@@ -48,21 +51,41 @@ def add_product():
 @blueprint.route('/process_add_product', methods=['POST'])
 def process_add_product():
     form = AddNewProductForm()
+
     if form.validate_on_submit():
+
+        photos = form.photos.data
+        if is_extension_allowed(photos) == False:
+            flash('Можно добавить изображения с расширеним png, jpg, jpeg')
+            return redirect(url_for('marketplace.add_product'))
+
+        photos_path = save_files(photos)
+
         new_product = Product(
             category_id=form.category.data,
             user_id=current_user.id,
             name=form.name.data,
-            price=form.price.data,
-            photos_path='asdasdas',
-            description=form.description.data,
-            brand_name=form.brand_name.data,
-            color=form.color.data,
-            gender=form.gender.data,
-            size=form.size.data
+            price = form.price.data,
+            description = form.description.data,
+            brand_name = form.brand_name.data,
+            color = form.color.data,
+            gender = form.gender.data,
+            size = form.size.data
         )
+
         db.session.add(new_product)
         db.session.commit()
+
+        for path in photos_path:
+            
+            new_product_photo = Photo(
+                product_id = new_product.id,
+                photos_path = path
+            )
+
+            db.session.add(new_product_photo)
+            db.session.commit()
+
         flash('Вы добавили товар')
         return redirect(url_for('marketplace.index'))
     else:
