@@ -4,9 +4,10 @@ from flask_migrate import Migrate
 
 from webapp.cache import cache
 from webapp.db import db
-from webapp.user.models import User
-from webapp.marketplace.models import Category
+from webapp.marketplace.models import Category, Product
 from webapp.marketplace.views import blueprint as marketplace_blueprint
+from webapp.marketplace.forms import SearchForm
+from webapp.user.models import User
 from webapp.user.views import blueprint as user_blueprint
 
 
@@ -29,12 +30,15 @@ def create_app():
 
     @app.context_processor
     def utility_processor():
-        @cache.cached(timeout=18000, key_prefix='dropdown_categories')
-        def dropdown_categories():
-            categories = Category.query.filter(Category.parent_id.is_(None)).all()
-            result = [sub_categories for category in categories for sub_categories in category.drilldown_tree()]
-            return result
+        form = SearchForm()
+        form.search_input.data = ''
+        return dict(search_form=form)
 
-        return dict(dropdown_categories=dropdown_categories)
+    @app.context_processor
+    @cache.cached(timeout=18000, key_prefix='dropdown_categories')
+    def utility_processor():
+        categories = Category.query.filter(Category.parent_id.is_(None)).all()
+        result = [sub_categories for category in categories for sub_categories in category.drilldown_tree()]
+        return dict(dropdown_categories=result)
 
     return app

@@ -5,16 +5,13 @@ from webapp.db import db
 
 
 class User(db.Model, UserMixin):
-    '''Все данные о пользователе, которые будут храниться в БД.
-    При регистрации обязательные поля - email и пароль'''
-
     id = db.Column(db.Integer, primary_key=True)
     email = db.Column(db.String(60), unique=True, nullable=False)
-    phone_number = db.Column(db.String(12), unique=True, nullable=True)
-    full_name = db.Column(db.String(100), nullable=True)
-    shipping_adress = db.Column(db.String(200), nullable=True)
+    phone_number = db.Column(db.String(12), unique=True)
+    full_name = db.Column(db.String(100))
+    shipping_adress = db.Column(db.String(200))
     password = db.Column(db.String(128), nullable=False)
-    role = db.Column(db.String(20), index=True)
+    role = db.Column(db.String(20))
 
     def set_password(self, password):
         self.password = generate_password_hash(password)

@@ -1,11 +1,5 @@
 {% extends "base.html" %}
 
 {% block content %}
-    <form action="{{ url_for('marketplace.search_result') }}" class="form-inline my-2 my-lg-0"
-          method="POST">
-        {{ form.hidden_tag() }}
-        {{ form.search_input() }}
-        {{ form.submit() }}
-    </form>
     {% include 'product_cart.html' %}
 {% endblock %}

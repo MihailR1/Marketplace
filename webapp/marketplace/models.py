@@ -6,7 +6,6 @@ from webapp.user.models import User
 
 
 class Category(db.Model, BaseNestedSets):
-    __tablename__ = 'categories'
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(50), index=True, unique=True)
 

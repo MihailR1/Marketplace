@@ -1,6 +1,6 @@
 from flask_wtf import FlaskForm
-from wtforms import IntegerField, StringField, SubmitField, TextAreaField, SelectField, Form
-from wtforms.validators import DataRequired, NumberRange, ValidationError
+from wtforms import IntegerField, StringField, SubmitField, TextAreaField, SelectField
+from wtforms.validators import DataRequired, NumberRange
 
 from webapp.marketplace.models import Category
 
@@ -24,5 +24,7 @@ class AddNewProductForm(FlaskForm):
 
 
 class SearchForm(FlaskForm):
-    search_input = StringField('Найти товар', render_kw={"class": "form-control mr-sm-2", "placeholder": "Найти товар"})
+    search_input = StringField('Найти товар', validators=[DataRequired()],
+                               render_kw={"class": "form-control mr-sm-2", "placeholder": "Найти товар",
+                                          "autocomplete": "off"})
     submit = SubmitField('Поиск', render_kw={"class": "btn btn-outline-success my-2 my-sm-0"})
