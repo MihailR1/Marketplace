@@ -1,9 +1,10 @@
 from flask import Blueprint, flash, render_template, redirect, url_for, abort, request, jsonify
 from flask_login import current_user, login_required
-from sqlalchemy import func
 
+from webapp.db import db
 from webapp.marketplace.forms import AddNewProductForm, SearchForm
-from webapp.marketplace.models import Category, db, Product
+from webapp.marketplace.models import Category, Product, Photo
+from webapp.services.service_photo import is_extension_allowed, save_files
 
 blueprint = Blueprint('marketplace', __name__)
 
@@ -20,10 +21,10 @@ def search_result():
     form = SearchForm()
     if form.validate_on_submit():
         found_products = []
-        search_string = form.search_input.data
+        search_string = form.search_input.data.lower()
 
         if search_string:
-            found_products = Product.query.filter(func.lower(Product.name).ilike(f'%{search_string}%')).all()
+            found_products = Product.query.filter(Product.name.ilike(f'%{search_string}%')).all()
             title = f'По запросу «{search_string}» найдено {len(found_products)} товаров'
             return render_template('search.html', page_title=title, products=found_products)
 
@@ -41,7 +42,7 @@ def search_result():
 @blueprint.route("/livesearch", methods=['POST'])
 def livesearch():
     if request.method == 'POST':
-        search_text = request.form['search']
+        search_text = request.form['search'].lower()
         query_to_db = Product.query.filter(Product.name.ilike(f'%{search_text}%')).all()
         result = [(category.name, category.id) for category in query_to_db]
         return jsonify(result)
@@ -63,6 +64,7 @@ def category_page(category_id):
 
     if children_categories:
         categories_id = [category.id for category in children_categories]
+        categories_id.append(category_id)
         products = Product.query.filter(Product.category_id.in_(categories_id)).all()
     else:
         products = Product.query.filter(Product.category_id == category_id).all()
@@ -84,21 +86,40 @@ def add_product():
 @blueprint.route('/process_add_product', methods=['POST'])
 def process_add_product():
     form = AddNewProductForm()
+
     if form.validate_on_submit():
+
+        photos = form.photos.data
+        if is_extension_allowed(photos) == False:
+            flash('Можно добавить изображения с расширеним png, jpg, jpeg')
+            return redirect(url_for('marketplace.add_product'))
+
+        photos_path = save_files(photos)
+
         new_product = Product(
             category_id=form.category.data,
             user_id=current_user.id,
             name=form.name.data,
             price=form.price.data,
-            photos_path='asdasdas',
             description=form.description.data,
             brand_name=form.brand_name.data,
             color=form.color.data,
             gender=form.gender.data,
             size=form.size.data
         )
+
         db.session.add(new_product)
         db.session.commit()
+
+        for path in photos_path:
+            new_product_photo = Photo(
+                product_id=new_product.id,
+                photos_path=path
+            )
+
+            db.session.add(new_product_photo)
+            db.session.commit()
+
         flash('Вы добавили товар')
         return redirect(url_for('marketplace.index'))
     else:
