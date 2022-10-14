@@ -5,26 +5,29 @@
         <span class="navbar-toggler-icon"></span>
     </button>
 
-
     <div class="collapse navbar-collapse" id="navbarSupportedContent">
         <ul class="navbar-nav mr-auto">
-            <li class="nav-item active">
+            <li class="nav-item">
                 <a class="nav-link" href="/">Главная страница</a>
             </li>
             <li>
                 {% include 'category_menu.html' %}
             </li>
-            <li class="nav-item active">
-                <form class="form-inline my-2 my-lg-0">
-                    <input class="form-control mr-sm-2" type="search" placeholder="Search" aria-label="Найт товар">
-                    <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Поиск</button>
+            <li class="nav-item">
+                <form action="{{ url_for('marketplace.search_result') }}" class="form-inline my-2 my-lg-0"
+                      method="POST">
+                    {{ search_form.hidden_tag() }}
+                    {{ search_form.search_input() }}
+                    {{ search_form.submit() }}
                 </form>
+                <div id="search_box-result"></div>
             </li>
         </ul>
+
         <ul class="navbar-nav">
             {% if current_user.is_authenticated %}
                 <li class="nav-item">
-                    <span class="nav-link">Привет, {{ current_user.full_name }}</span>
+                    <span class="nav-link">Привет, {{ current_user.email }}</span>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link" href="{{ url_for('user.logout') }}">Выйти</a>

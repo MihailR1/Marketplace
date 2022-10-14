@@ -1,35 +1,5 @@
 {% extends "base.html" %}
 
 {% block content %}
-    <div class="row">
-        <div class="col-8">
-            {% with messages = get_flashed_messages() %}
-                {% if messages %}
-                    <div class="alert alert-warning" role="alert">
-                        {% for message in messages %}
-                            {{ message }}<br>
-                        {% endfor %}
-                    </div>
-                {% endif %}
-            {% endwith %}
-
-        </div>
-    </div>
-    <div class="row row-cols-1 row-cols-md-3 g-4">
-        {% for product in products %}
-            <div class="col" style="margin-bottom: 15px">
-                <div class="card h-100" style="width: 18rem">
-                    <img src="{{ product.photos_path }}" class="card-img-top" alt="{{ product.name }}">
-                    <div class="card-body">
-                        <h5 class="card-title">{{ product.name }}</h5>
-                        <p class="card-text"> {{ product.description }}</p>
-                        <p class="card-text"> Цвет: {{ product.color }}</p>
-                        <p class="card-text"> Размеры: {{ product.size }}</p>
-                        <p class="card-text"> Цена: {{ product.price }} руб.</p>
-                        <a href="{{ url_for('marketplace.product_page', product_id=product.id) }}" class="btn btn-primary">Подробнее о товаре</a>
-                    </div>
-                </div>
-            </div>
-        {% endfor %}
-    </div>
+    {% include 'product_cart.html' %}
 {% endblock %}
