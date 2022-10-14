@@ -1,3 +1,4 @@
+from itertools import product
 from flask import Blueprint, flash, render_template, redirect, url_for, abort, request
 from flask_login import current_user, login_required
 
@@ -110,3 +111,11 @@ def favorite_product(product_id, action):
         favorite = Favorite.query.filter_by(user_id=current_user.id, product_id=product.id).delete()
         db.session.commit()
     return redirect(request.referrer)
+
+
+@login_required
+@blueprint.route('/favorite')
+def favorite():
+    title = "Избранное"
+    products = Product.query.filter(Product.id == Favorite.product_id, Favorite.user_id == current_user.id).all()
+    return render_template('marketplace/favorite_page.html', page_title=title, products=products)
