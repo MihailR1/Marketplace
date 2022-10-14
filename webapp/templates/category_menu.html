@@ -3,7 +3,7 @@
             data-mdb-toggle="dropdown" data-bs-toggle="dropdown" aria-expanded="false">Каталог
     </button>
     <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-        {% for category in dropdown_categories %}
+        {% for category in dropdown_categories() %}
             <li>
                 <a class="dropdown-item"
                    href="{{ url_for('marketplace.category_page', category_id=category['node'].id) }}">
