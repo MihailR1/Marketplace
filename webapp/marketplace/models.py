@@ -19,7 +19,7 @@ class Product(db.Model):
     category = relationship('Category', backref='products')
     user_id = db.Column(db.Integer, db.ForeignKey(User.id))
     user = relationship('User', backref='products')
-    name = db.Column(db.String(120), index=True, unique=True, nullable=False)
+    name = db.Column(db.String(180), index=True, unique=True, nullable=False)
     price = db.Column(db.Integer, nullable=False)
     description = db.Column(db.Text)
     brand_name = db.Column(db.String(40))

@@ -5,7 +5,7 @@ $(document).ready(function () {
         if (data != '') {
             $result.html('').show();
             for (var i in data) {
-                let addBoldText = `${data[i][0]}`.replace(user_query, `<b>${user_query}</b>`)
+                let addBoldText = `${data[i][0].toLowerCase()}`.replace(user_query.toLowerCase(), `<b>${user_query.toLowerCase()}</b>`)
                 $result.append(
                     $(
                         '<div class="search_result_sub">' +

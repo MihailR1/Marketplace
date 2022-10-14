@@ -73,12 +73,23 @@ def run_migrations_online():
 
     connectable = current_app.extensions['migrate'].db.get_engine()
 
+    def my_compare_type(context, inspected_column,
+                        metadata_column, inspected_type, metadata_type):
+        # return False if the metadata_type is the same as the inspected_type
+        # or None to allow the default implementation to compare these
+        # types. a return value of True means the two types do not
+        # match and should result in a type change operation.
+        return None
+
+
     with connectable.connect() as connection:
         context.configure(
             connection=connection,
             target_metadata=target_metadata,
             process_revision_directives=process_revision_directives,
-            **current_app.extensions['migrate'].configure_args
+            **current_app.extensions['migrate'].configure_args,
+            compare_type=my_compare_type
+
         )
 
         with context.begin_transaction():
