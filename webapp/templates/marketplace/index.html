@@ -26,6 +26,7 @@
                         <p class="card-text"> Цвет: {{ product.color }}</p>
                         <p class="card-text"> Размеры: {{ product.size }}</p>
                         <p class="card-text"> Цена: {{ product.price }} руб.</p>
+                        {% include 'marketplace/favorite_area.html' %}
                         <a href="{{ url_for('marketplace.product_page', product_id=product.id) }}" class="btn btn-primary">Подробнее о товаре</a>
                     </div>
                 </div>

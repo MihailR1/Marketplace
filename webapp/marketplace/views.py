@@ -1,8 +1,8 @@
-from flask import Blueprint, flash, render_template, redirect, url_for, abort
+from flask import Blueprint, flash, render_template, redirect, url_for, abort, request
 from flask_login import current_user, login_required
 
 from webapp.marketplace.forms import AddNewProductForm
-from webapp.marketplace.models  import Product, Photo, Category
+from webapp.marketplace.models  import Product, Photo, Category, Favorite
 from webapp.db import db
 from webapp.services.service_photo import is_extension_allowed, save_files
 
@@ -96,3 +96,17 @@ def process_add_product():
                     error
                 ))
     return redirect(url_for('marketplace.add_product'))
+
+
+@login_required
+@blueprint.route('/favorite_product/<int:product_id>/<action>')
+def favorite_product(product_id, action):
+    product = Product.query.filter_by(id=product_id).first_or_404()
+    if action == 'add_favorite':
+        favorite = Favorite(user_id=current_user.id, product_id=product.id)
+        db.session.add(favorite)
+        db.session.commit()
+    if action == 'del_favorite':
+        favorite = Favorite.query.filter_by(user_id=current_user.id, product_id=product.id).delete()
+        db.session.commit()
+    return redirect(request.referrer)

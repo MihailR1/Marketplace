@@ -36,6 +36,8 @@ class Product(db.Model):
 
 
 class Photo(db.Model):
+    __tablename__ = 'photos'
+
     id = db.Column(db.Integer, primary_key=True)
     product_id = db.Column(db.Integer, db.ForeignKey(Product.id))
     product = relationship('Product', backref='photos')
@@ -43,3 +45,14 @@ class Photo(db.Model):
 
     def __repr__(self):
         return f'<Photo {self.photos_path}, id {self.id}, product {self.product}>'
+
+
+class Favorite(db.Model):
+
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey(User.id))
+    product_id = db.Column(db.Integer, db.ForeignKey(Product.id))
+
+    def __repr__(self):
+        return f'<Favorite {self.user_id}, {self.product_id}>'
+
