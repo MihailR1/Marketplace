@@ -1,7 +1,7 @@
 import uuid
 import os
 
-from webapp.config import UPLOAD_PATH, ALLOWED_IMAGE
+from webapp.config import UPLOAD_PATH, ALLOWED_IMAGE, basedir
 
 
 def is_extension_allowed(photos):
@@ -12,10 +12,9 @@ def is_extension_allowed(photos):
             return True
         else:
             return False
-            
+
 
 def save_files(photos):
-
     photos_path = []
 
     for photo in photos:
@@ -23,7 +22,8 @@ def save_files(photos):
         unique_filename = str(uuid.uuid4())
         extension = photo_name.split('.')[-1]
         photo_name_ext = f'{unique_filename}.{extension}'
+        os.makedirs(f'{basedir}/media', exist_ok=True)  # Проверяет есть ли папка, если нету создает
         photo.save(os.path.join(UPLOAD_PATH, photo_name_ext))
         photos_path.append(os.path.join(UPLOAD_PATH, photo_name_ext))
-    
+
     return photos_path

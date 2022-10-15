@@ -6,24 +6,20 @@ from webapp.user.models import User
 
 
 class Category(db.Model, BaseNestedSets):
-    __tablename__ = 'categories'
-
     id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(50), index=True, unique=True)
+    name = db.Column(db.String(80), index=True, unique=True)
 
     def __repr__(self):
         return f'<Category {self.name}>'
 
 
 class Product(db.Model):
-    __tablename__ = 'products'
-
     id = db.Column(db.Integer, primary_key=True)
     category_id = db.Column(db.Integer, db.ForeignKey(Category.id))
     category = relationship('Category', backref='products')
     user_id = db.Column(db.Integer, db.ForeignKey(User.id))
     user = relationship('User', backref='products')
-    name = db.Column(db.String(75), index=True, unique=True, nullable=False)
+    name = db.Column(db.String(180), index=True, unique=True, nullable=False)
     price = db.Column(db.Integer, nullable=False)
     description = db.Column(db.Text)
     brand_name = db.Column(db.String(40))

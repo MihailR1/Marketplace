@@ -1,4 +1,4 @@
-from flask import  Blueprint, flash, render_template, redirect, url_for
+from flask import Blueprint, flash, render_template, redirect, url_for
 from flask_login import current_user, login_user, logout_user
 
 from webapp.db import db
@@ -7,6 +7,7 @@ from webapp.user.models import User
 
 blueprint = Blueprint('user', __name__, url_prefix='/users')
 
+
 @blueprint.route('/login')
 def login():
     if current_user.is_authenticated:
@@ -14,6 +15,7 @@ def login():
     title = "Войти"
     login_form = LoginForm()
     return render_template('user/login.html', page_title=title, form=login_form)
+
 
 @blueprint.route('/process-login', methods=['POST'])
 def process_login():
@@ -29,11 +31,13 @@ def process_login():
         flash('Не правильные имя или пароль')
         return redirect(url_for('user.login'))
 
+
 @blueprint.route('/logout')
 def logout():
     logout_user()
-    flash('Вы успешно разлогигились')
+    flash('Вы успешно разлогинились')
     return redirect(url_for('marketplace.index'))
+
 
 @blueprint.route('/register')
 def register():
@@ -43,6 +47,7 @@ def register():
     form = RegistrationForm()
     return render_template('user/registration.html', page_title=title, form=form)
 
+
 @blueprint.route('/process-reg', methods=['POST'])
 def process_reg():
     form = RegistrationForm()
@@ -50,10 +55,8 @@ def process_reg():
         new_user = User(
             email=form.email.data,
             phone_number=form.phone_number.data,
-            full_name=form.full_name.data,
-            shipping_adress=form.shipping_adress.data,
             role='user'
-            )
+        )
         new_user.set_password(form.password.data)
         db.session.add(new_user)
         db.session.commit()
