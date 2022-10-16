@@ -13,7 +13,8 @@
                     <p class="card-text"> Цвет: {{ product.color }}</p>
                     <p class="card-text"> Размеры: {{ product.size }}</p>
                     <p class="card-text"> Цена: {{ product.price }} руб.</p>
-                    <p class="card-text"><small class="text-muted">Категория: {{ product.category.name }}</small></p>
+                    {# <p class="card-text"><small class="text-muted">Категория: {{ product.category.name }}</small></p>#}
+                    {% include 'add_to_cart_section.html' %}
                 </div>
             </div>
         </div>

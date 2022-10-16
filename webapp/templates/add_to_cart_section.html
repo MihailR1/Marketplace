@@ -1,0 +1,15 @@
+<div class="btn btn-primary" id="button_add_to_cart_{{ product.id }}"
+     onclick="addToCart({{ product.id }}, {% if products_in_cart %} {{ products_in_cart[product.id ] }} {% else %} 1{% endif %})">
+    Добавить в корзину
+</div>
+
+<div id="add_to_basket_{{ product.id }}" , style="display: none">
+    <p>Товар добавлен в корзину. <a href="{{ url_for('marketplace.cart') }}">Перейти в
+        корзину</a></p>
+    <p id="productOut_{{ product.id }}" style="display: none">Товар закончился</p>
+    <div class="number" id="number_{{ product.id }}" data-step="1">
+        <input class="number-text" id="number-text_{{ product.id }}" type="text" name="count"
+               value="{% if not products_in_cart[product.id ] %}1{% else %}{{ products_in_cart[product.id ] }}{% endif %}">
+        <span class="number-unit">шт</span>
+    </div>
+</div>

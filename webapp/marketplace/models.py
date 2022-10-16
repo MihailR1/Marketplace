@@ -26,6 +26,7 @@ class Product(db.Model):
     color = db.Column(db.String(20))
     gender = db.Column(db.String(7))
     size = db.Column(db.String(10))
+    quantity = db.Column(db.Integer, index=True, default=100)
 
     def __repr__(self):
         return f'<Product name {self.name}, id {self.id}, category {self.category}>'
@@ -39,3 +40,15 @@ class Photo(db.Model):
 
     def __repr__(self):
         return f'<Photo {self.photos_path}, id {self.id}, product {self.product}>'
+
+
+class ShoppingCart(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey(User.id))
+    product_id = db.Column(db.Integer, db.ForeignKey(Product.id))
+    products = relationship('Product')
+    price = db.Column(db.Integer, nullable=False)
+    quantity = db.Column(db.Integer)
+
+    def __repr__(self):
+        return f'<ShoppingCart id {self.id}, user_id: {self.user_id}, products: {self.products}>'
