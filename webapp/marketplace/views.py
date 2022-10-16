@@ -1,12 +1,13 @@
+from itertools import product
 from flask import Blueprint, flash, render_template, redirect, url_for, abort, request, jsonify
 from flask_login import current_user, login_required
 
 from webapp.marketplace.forms import AddNewProductForm
-from webapp.marketplace.models  import Product, Photo, Category, Favorite
+from webapp.marketplace.models  import Product, Photo, Category, User_favorite_product
 from webapp.db import db
 from webapp.marketplace.forms import AddNewProductForm, SearchForm
-from webapp.marketplace.models import Category, Product, Photo
 from webapp.services.service_photo import is_extension_allowed, save_files
+from webapp.services.service_favorite_product import is_user_favorite_product
 
 blueprint = Blueprint('marketplace', __name__)
 
@@ -15,7 +16,7 @@ blueprint = Blueprint('marketplace', __name__)
 def index():
     title = "Каталог товаров"
     products = Product.query.all()
-    return render_template('marketplace/index.html', page_title=title, products=products)
+    return render_template('marketplace/index.html', page_title=title, products=products, check_user_favorite=is_user_favorite_product)
 
 
 @blueprint.route('/search', methods=['POST'])
@@ -135,22 +136,33 @@ def process_add_product():
 
 
 @login_required
-@blueprint.route('/favorite_product/<int:product_id>/<action>')
-def favorite_product(product_id, action):
+@blueprint.route('/add_favorite_product/<int:product_id>')
+def add_favorite_product(product_id):
+    """Добавление товара в избранное"""
+
     product = Product.query.filter_by(id=product_id).first_or_404()
-    if action == 'add_favorite':
-        favorite = Favorite(user_id=current_user.id, product_id=product.id)
-        db.session.add(favorite)
-        db.session.commit()
-    if action == 'del_favorite':
-        favorite = Favorite.query.filter_by(user_id=current_user.id, product_id=product.id).delete()
-        db.session.commit()
+    favorite = User_favorite_product(user_id=current_user.id, product_id=product.id)
+    db.session.add(favorite)
+    db.session.commit()
+    return redirect(request.referrer)
+
+
+@login_required
+@blueprint.route('/del_favorite_product/<int:product_id>')
+def del_favorite_product(product_id):
+    """Удаление товара из избранного"""
+
+    product = Product.query.filter_by(id=product_id).first_or_404()
+    favorite = User_favorite_product.query.filter_by(user_id=current_user.id, product_id=product.id).delete()
+    db.session.commit()
     return redirect(request.referrer)
 
 
 @login_required
 @blueprint.route('/favorite')
-def favorite():
+def favorite_page():
+    """Страница с понравившимся товаром пользователя"""
+
     title = "Избранное"
-    products = Product.query.filter(Product.id == Favorite.product_id, Favorite.user_id == current_user.id).all()
-    return render_template('marketplace/favorite_page.html', page_title=title, products=products)
+    products = Product.query.filter(Product.id == User_favorite_product.product_id, User_favorite_product.user_id == current_user.id).all()
+    return render_template('marketplace/favorite_page.html', page_title=title, products=products, check_user_favorite=is_user_favorite_product)

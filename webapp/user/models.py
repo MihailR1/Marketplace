@@ -5,6 +5,7 @@ from webapp.db import db
 
 
 
+
 class User(db.Model, UserMixin):
     id = db.Column(db.Integer, primary_key=True)
     email = db.Column(db.String(60), unique=True, nullable=False)
@@ -21,13 +22,7 @@ class User(db.Model, UserMixin):
 
     def check_password(self, password):
         return check_password_hash(self.password, password)
-    
-
-    def is_favorite_product(self, product):
-        return Favorite.query.filter(
-            Favorite.user_id == self.id,
-            Favorite.product_id == product.id
-        ).count() > 0
+        
 
     def __repr__(self):
         return f'<User {self.id}>'
