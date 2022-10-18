@@ -1,9 +1,9 @@
-from webapp.marketplace.models import User_favorite_product
+from webapp.marketplace.models import UserFavoriteProduct
 
-def is_user_favorite_product(current_user, product):
-    return User_favorite_product.query.filter(
-        User_favorite_product.user_id == current_user.id, 
-        User_favorite_product.product_id == product.id
+def is_user_add_product_to_favorite(current_user, product):
+    return UserFavoriteProduct.query.filter(
+        UserFavoriteProduct.user_id == current_user.id, 
+        UserFavoriteProduct.product_id == product.id
     ).count() > 0
 
 
