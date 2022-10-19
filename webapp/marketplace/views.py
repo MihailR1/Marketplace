@@ -5,8 +5,8 @@ from webapp.db import db
 from webapp.marketplace.forms import AddNewProductForm, SearchForm
 from webapp.marketplace.models import Category, Product, Photo, ShoppingCart
 from webapp.services.service_photo import is_extension_allowed, save_files
-from webapp.services.cached_queries_to_db import (get_product_by_id, search_products_by_text,
-                                                  number_of_unique_products_in_cart)
+from webapp.services.service_cart import (get_product_by_id, search_products_by_text, get_products_in_cart,
+                                          get_unique_products_in_cart)
 
 blueprint = Blueprint('marketplace', __name__)
 
@@ -15,7 +15,9 @@ blueprint = Blueprint('marketplace', __name__)
 def index():
     title = "Каталог товаров"
     products = Product.query.all()
-    return render_template('marketplace/index.html', page_title=title, products=products)
+    products_in_cart = get_products_in_cart()
+    return render_template('marketplace/index.html', page_title=title, products=products,
+                           products_in_cart=products_in_cart)
 
 
 @blueprint.route('/search', methods=['POST'])
@@ -75,7 +77,7 @@ def add_to_cart():
             available_status = False
 
         session['unique_products_in_cart'] = len(session['shopping_cart'])
-        unique_products_in_cart = session['unique_products_in_cart']
+        unique_products_in_cart = get_unique_products_in_cart()
         session.modified = True
 
     # Если пользователь авторизован
@@ -87,17 +89,16 @@ def add_to_cart():
                 ShoppingCart.product_id == current_product_id
             ).delete()
             db.session.commit()
-            unique_products_in_cart = number_of_unique_products_in_cart(current_user.id)
+            unique_products_in_cart = get_unique_products_in_cart()
             return jsonify({"is_available": available_status, "quantity": product_quantity,
                             "unique_products": unique_products_in_cart})
-
         product_handler = ShoppingCart.query.filter(ShoppingCart.user_id == current_user.id,
                                                     ShoppingCart.product_id == current_product_id).first()
-        unique_products_in_cart = number_of_unique_products_in_cart(current_user.id)
+        unique_products_in_cart = get_unique_products_in_cart()
         # Если продукта нет в корзине
         if not product_handler:
             save_product_in_cart = ShoppingCart(user_id=current_user.id, product_id=current_product_id,
-                                                quantity=user_quantity, price=product_query.price)
+                                                quantity=user_quantity)
             db.session.add(save_product_in_cart)
             db.session.commit()
             unique_products_in_cart += 1
@@ -119,7 +120,11 @@ def add_to_cart():
 def cart():
     title = 'Корзина товаров'
     if current_user.is_authenticated:
-        products_in_cart = ShoppingCart.query.filter(ShoppingCart.user_id == current_user.id).all()
+        query_products_in_cart = ShoppingCart.query.filter(ShoppingCart.user_id == current_user.id).all()
+        if query_products_in_cart:
+            products_in_cart = {product.product_info: product.quantity for product in query_products_in_cart}
+        else:
+            products_in_cart = None
     else:
         products_in_cart = session.get('shopping_cart', None)
         if products_in_cart:
@@ -131,21 +136,29 @@ def cart():
                     if product.id == int(id_product):
                         products_in_cart[product] = quantity
                         break
-    return render_template('marketplace/cart.html', page_title=title, products_in_cart=products_in_cart)
+    count_all_products = sum(products_in_cart.values())
+    count_total_money = sum({product.price * quantity for product, quantity in products_in_cart.items()})
+
+    return render_template('marketplace/cart.html', page_title=title, products_in_cart=products_in_cart,
+                           count_all_products=count_all_products, count_total_money=count_total_money)
 
 
 @blueprint.route('/product/<int:product_id>')
 def product_page(product_id):
     product = get_product_by_id(product_id)
+    products_in_cart = get_products_in_cart()
     if not product:
         abort(404)
-    return render_template('marketplace/product_page.html', page_title='Карточка товара', product=product)
+
+    return render_template('marketplace/product_page.html', page_title='Карточка товара',
+                           product=product, products_in_cart=products_in_cart)
 
 
 @blueprint.route('/category/<int:category_id>')
 def category_page(category_id):
     category = Category.query.filter(Category.id == category_id).first()
     children_categories = category.get_children().all()
+    products_in_cart = get_products_in_cart()
     title = f'Раздел товаров: {category.name}'
 
     if children_categories:
@@ -157,7 +170,8 @@ def category_page(category_id):
     if not category:
         abort(404)
 
-    return render_template('marketplace/category_page.html', page_title=title, products=products)
+    return render_template('marketplace/category_page.html', page_title=title, products=products,
+                           products_in_cart=products_in_cart)
 
 
 @login_required

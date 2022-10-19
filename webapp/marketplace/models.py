@@ -16,10 +16,10 @@ class Category(db.Model, BaseNestedSets):
 class Product(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     category_id = db.Column(db.Integer, db.ForeignKey(Category.id))
-    category = relationship('Category', backref='products')
+    category = relationship('Category', backref='products', lazy='joined')
     user_id = db.Column(db.Integer, db.ForeignKey(User.id))
     user = relationship('User', backref='products')
-    name = db.Column(db.String(180), index=True, unique=True, nullable=False)
+    name = db.Column(db.String(180), index=True, nullable=False)
     price = db.Column(db.Integer, nullable=False)
     description = db.Column(db.Text)
     brand_name = db.Column(db.String(40))
@@ -46,9 +46,8 @@ class ShoppingCart(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey(User.id))
     product_id = db.Column(db.Integer, db.ForeignKey(Product.id))
-    products = relationship('Product')
-    price = db.Column(db.Integer, nullable=False)
+    product_info = relationship('Product', backref='shopping_cart')
     quantity = db.Column(db.Integer)
 
     def __repr__(self):
-        return f'<ShoppingCart id {self.id}, user_id: {self.user_id}, products: {self.products}>'
+        return f'<ShoppingCart id {self.id}, user_id: {self.user_id}, products: {self.product_info}>'

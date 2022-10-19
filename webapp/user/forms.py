@@ -30,6 +30,7 @@ class RegistrationForm(FlaskForm):
             raise ValidationError('Пользователь с таким адресом уже существует')
 
     def validate_phone_number(self, phone_number):
-        user_count = User.query.filter_by(phone_number=phone_number.data).count()
-        if user_count > 0:
-            raise ValidationError('Пользователь с таким номером телефона уже существует')
+        if phone_number.data:
+            user_count = User.query.filter_by(phone_number=phone_number.data).count()
+            if user_count > 0:
+                raise ValidationError('Пользователь с таким номером телефона уже существует')

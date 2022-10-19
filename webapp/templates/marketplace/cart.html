@@ -3,41 +3,28 @@
 {% block content %}
     {% if products_in_cart %}
         <div class="row">
-            {% if current_user.is_authenticated %}
-
-                {% for product in products_in_cart %}
-                    <div class="col-sm-6" id="cart_product_{{ product.products.id }}">
-                        <div class="card">
-                            <div class="card-body">
-                                <a href="{{ url_for('marketplace.product_page', product_id=product.products.id) }}">
-                                    <h5 class="card-title">{{ product.products.name }}</h5>
-                                </a>
-                                <p class="card-text">Цена: {{ product.price }} руб.</p>
-                                <p class="card-text">Количество: {{ product.quantity }} шт.</p>
-                                <a href="#" class="btn btn-primary" onclick="deleteFromCart({{ product.products.id }})"
-                                   id="delete_from_cart_{{ product.products.id }}">Удалить из корзины</a>
-                            </div>
+            <div class="col-sm-6">
+                <h5 class="card-title">В корзине {{ count_all_products }} шт. товаров, на
+                    сумму {{ count_total_money }} рублей.</h5>
+            </div>
+        </div>
+        <div class="row">
+            {% for product, quantity in products_in_cart.items() %}
+                <div class="col-sm-6" id="cart_product_{{ product.id }}">
+                    <div class="card">
+                        <div class="card-body">
+                            <a href="{{ url_for('marketplace.product_page', product_id=product.id) }}">
+                                <h5 class="card-title">{{ product.name }}</h5>
+                            </a>
+                            <p class="card-text">Цена: {{ product.price }} руб.</p>
+                            <p class="card-text">Количество: {{ quantity }} шт.</p>
+                            <p class="card-text">Сумма: {{ product.price*quantity }} руб.</p>
+                            <a href="#" class="btn btn-primary" onclick="deleteFromCart({{ product.id }})"
+                               id="delete_from_cart_{{ product.id }}">Удалить из корзины</a>
                         </div>
                     </div>
-                {% endfor %}
-
-            {% else %}
-                {% for product, quantity in products_in_cart.items() %}
-                    <div class="col-sm-6" id="cart_product_{{ product.id }}">
-                        <div class="card">
-                            <div class="card-body">
-                                <a href="{{ url_for('marketplace.product_page', product_id=product.id) }}">
-                                    <h5 class="card-title">{{ product.name }}</h5>
-                                </a>
-                                <p class="card-text">Цена: {{ product.price }} руб.</p>
-                                <p class="card-text">Количество: {{ quantity }} шт.</p>
-                                <a href="#" class="btn btn-primary" onclick="deleteFromCart({{ product.id }})"
-                                   id="delete_from_cart_{{ product.id }}">Удалить из корзины</a>
-                            </div>
-                        </div>
-                    </div>
-                {% endfor %}
-            {% endif %}
+                </div>
+            {% endfor %}
         </div>
 
     {% else %}

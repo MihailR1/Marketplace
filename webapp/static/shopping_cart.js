@@ -1,7 +1,6 @@
 function deleteFromCart(product_id) {
     query_to_db(product_id, 0)
     document.getElementById('cart_product_' + product_id).style.display = 'none';
-    console.log('Удаление из корзины')
 }
 
 function addToCart(product_id, quantity = 1) {
