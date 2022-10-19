@@ -42,6 +42,17 @@ class Photo(db.Model):
         return f'<Photo {self.photos_path}, id {self.id}, product {self.product}>'
 
 
+class UserFavoriteProduct(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey(User.id))
+    user = relationship('User', backref='user_favorite_products')
+    product_id = db.Column(db.Integer, db.ForeignKey(Product.id))
+    product = relationship('Product', backref='user_favorite_products')
+
+    def __repr__(self):
+        return f'<User_favorite_product {self.user_id}, {self.product_id}>'
+
+
 class ShoppingCart(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey(User.id))

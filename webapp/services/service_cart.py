@@ -1,11 +1,9 @@
 from flask import session
 from flask_login import current_user
 
-from webapp import cache
 from webapp.marketplace.models import Product, ShoppingCart
 
 
-@cache.memoize(timeout=600)
 def search_products_by_text(search_text):
     products_query = Product.query.filter(Product.name.ilike(f'%{search_text}%')).all()
     return products_query

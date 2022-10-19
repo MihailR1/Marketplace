@@ -3,10 +3,11 @@ from flask_login import current_user, login_required
 
 from webapp.db import db
 from webapp.marketplace.forms import AddNewProductForm, SearchForm
-from webapp.marketplace.models import Category, Product, Photo, ShoppingCart
+from webapp.marketplace.models import Category, Product, Photo, ShoppingCart, UserFavoriteProduct
 from webapp.services.service_photo import is_extension_allowed, save_files
 from webapp.services.service_cart import (get_product_by_id, search_products_by_text, get_products_in_cart,
                                           get_unique_products_in_cart)
+from webapp.services.service_favorite_product import is_user_add_product_to_favorite
 
 blueprint = Blueprint('marketplace', __name__)
 
@@ -17,7 +18,8 @@ def index():
     products = Product.query.all()
     products_in_cart = get_products_in_cart()
     return render_template('marketplace/index.html', page_title=title, products=products,
-                           products_in_cart=products_in_cart)
+                           products_in_cart=products_in_cart,
+                           is_user_add_product_to_favorite=is_user_add_product_to_favorite)
 
 
 @blueprint.route('/search', methods=['POST'])
@@ -26,11 +28,14 @@ def search_result():
     if form.validate_on_submit():
         found_products = []
         search_string = form.search_input.data.lower()
+        products_in_cart = get_products_in_cart()
 
         if search_string:
             found_products = search_products_by_text(search_string)
             title = f'По запросу «{search_string}» найдено {len(found_products)} товаров'
-            return render_template('search.html', page_title=title, products=found_products)
+            return render_template('search.html', page_title=title, products=found_products,
+                                   is_user_add_product_to_favorite=is_user_add_product_to_favorite,
+                                   products_in_cart=products_in_cart)
 
         if not found_products or not search_string:
             title = 'Не нашли подходящих товаров'
@@ -54,11 +59,9 @@ def livesearch():
 
 @blueprint.route('/add_to_cart', methods=['POST'])
 def add_to_cart():
-    if request.method == 'POST':
-        request_handler = request.get_json()
-        current_product_id = request_handler['product_id']
-        user_quantity = request_handler['quantity']
-
+    request_handler = request.get_json()
+    current_product_id = request_handler['product_id']
+    user_quantity = request_handler['quantity']
     product_query = get_product_by_id(current_product_id)
     product_quantity = product_query.quantity
     available_status = True
@@ -151,7 +154,8 @@ def product_page(product_id):
         abort(404)
 
     return render_template('marketplace/product_page.html', page_title='Карточка товара',
-                           product=product, products_in_cart=products_in_cart)
+                           product=product, products_in_cart=products_in_cart,
+                           is_user_add_product_to_favorite=is_user_add_product_to_favorite)
 
 
 @blueprint.route('/category/<int:category_id>')
@@ -171,7 +175,8 @@ def category_page(category_id):
         abort(404)
 
     return render_template('marketplace/category_page.html', page_title=title, products=products,
-                           products_in_cart=products_in_cart)
+                           products_in_cart=products_in_cart,
+                           is_user_add_product_to_favorite=is_user_add_product_to_favorite)
 
 
 @login_required
@@ -230,3 +235,46 @@ def process_add_product():
                     error
                 ))
     return redirect(url_for('marketplace.add_product'))
+
+
+@login_required
+@blueprint.route('/add_favorite_product/<int:product_id>')
+def add_favorite_product(product_id):
+    """Добавление товара в избранное"""
+
+    product = Product.query.filter_by(id=product_id).first_or_404()
+    favorite = UserFavoriteProduct(user_id=current_user.id, product_id=product.id)
+    db.session.add(favorite)
+    db.session.commit()
+    return redirect(request.referrer)
+
+
+@login_required
+@blueprint.route('/del_favorite_product/<int:product_id>')
+def del_favorite_product(product_id):
+    """Удаление товара из избранного"""
+
+    product = Product.query.filter_by(id=product_id).first_or_404()
+    favorite = UserFavoriteProduct.query.filter_by(user_id=current_user.id, product_id=product.id).delete()
+    db.session.commit()
+    return redirect(request.referrer)
+
+
+@login_required
+@blueprint.route('/favorite')
+def favorite_page():
+    """Страница с понравившимся товаром пользователя"""
+
+    title = "Избранное"
+    if current_user.is_authenticated:
+        products = Product.query.filter(Product.id == UserFavoriteProduct.product_id,
+                                        UserFavoriteProduct.user_id == current_user.id).all()
+        return render_template(
+            'marketplace/favorite_page.html',
+            page_title=title,
+            products=products,
+            is_user_add_product_to_favorite=is_user_add_product_to_favorite
+        )
+    else:
+        return render_template(
+            'marketplace/favorite_page.html', page_title=title)

@@ -16,6 +16,7 @@
                     <p class="card-text"> Цена: {{ product.price }} руб.</p>
                     <p class="card-text"><small class="text-muted">Категория: {{ product.category.name }}</small></p>
                     {% include 'add_to_cart_section.html' %}
+                    {% include 'marketplace/favorite_area.html' %}
                 </div>
             </div>
         </div>
