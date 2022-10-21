@@ -11,6 +11,5 @@ SECRET_KEY = os.environ['SECRET_KEY']
 CACHE_TYPE = "SimpleCache"
 CACHE_DEFAULT_TIMEOUT = 18000
 JSON_AS_ASCII = False
-
 UPLOAD_PATH = os.path.join(basedir, 'media')
 ALLOWED_IMAGE = set(['png', 'jpg', 'jpeg'])

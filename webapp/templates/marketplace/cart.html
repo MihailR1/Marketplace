@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+
+{% block content %}
+    {% if products_in_cart %}
+        <div class="row">
+            <div class="col-sm-6">
+                <h5 class="card-title">В корзине {{ count_all_products }} шт. товаров, на
+                    сумму {{ count_total_money }} рублей.</h5>
+            </div>
+        </div>
+        <div class="row">
+            {% for product, quantity in products_in_cart.items() %}
+                <div class="col-sm-6" id="cart_product_{{ product.id }}">
+                    <div class="card">
+                        <div class="card-body">
+                            <a href="{{ url_for('marketplace.product_page', product_id=product.id) }}">
+                                <h5 class="card-title">{{ product.name }}</h5>
+                            </a>
+                            <p class="card-text">Цена: {{ product.price }} руб.</p>
+                            <p class="card-text">Количество: {{ quantity }} шт.</p>
+                            <p class="card-text">Сумма: {{ product.price*quantity }} руб.</p>
+                            <a href="#" class="btn btn-primary" onclick="deleteFromCart({{ product.id }})"
+                               id="delete_from_cart_{{ product.id }}">Удалить из корзины</a>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+
+    {% else %}
+        <div class="row">
+            <div class="col-sm-6">
+                <h5 class="card-title">В корзине нет товаров</h5>
+            </div>
+        </div>
+    {% endif %}
+
+{% endblock %}

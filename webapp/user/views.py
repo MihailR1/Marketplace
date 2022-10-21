@@ -54,7 +54,6 @@ def process_reg():
     if form.validate_on_submit():
         new_user = User(
             email=form.email.data,
-            phone_number=form.phone_number.data,
             role='user'
         )
         new_user.set_password(form.password.data)

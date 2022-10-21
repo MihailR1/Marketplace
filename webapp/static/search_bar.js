@@ -24,7 +24,7 @@ $(document).ready(function () {
 
     $('#search_input').on('keyup', function () {
         var search = $(this).val();
-        if ((search != '') && (search.length > 2)) {
+        if ((search != '') && (search.length > 1)) {
             $.ajax({
                 type: "POST",
                 url: "/livesearch",
