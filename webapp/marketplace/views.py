@@ -3,7 +3,7 @@ from flask_login import current_user, login_required
 
 from webapp.marketplace.models  import Product, Photo, Category, UserFavoriteProduct
 from webapp.db import db
-from webapp.marketplace.forms import AddNewProductForm, SearchForm
+from webapp.marketplace.forms import AddNewProductForm, SearchForm, SortingProductForm
 from webapp.services.service_photo import is_extension_allowed, save_files
 from webapp.services.service_favorite_product import is_user_add_product_to_favorite
 
@@ -13,12 +13,14 @@ blueprint = Blueprint('marketplace', __name__)
 @blueprint.route('/')
 def index():
     title = "Каталог товаров"
+    sorting_product_form = SortingProductForm()
     products = Product.query.all()
     return render_template(
         'marketplace/index.html', 
         page_title=title, 
         products=products, 
-        is_user_add_product_to_favorite=is_user_add_product_to_favorite
+        is_user_add_product_to_favorite=is_user_add_product_to_favorite,
+        sorting_product_form=sorting_product_form
     )
 
 
@@ -178,4 +180,26 @@ def favorite_page():
         page_title=title, 
         products=products, 
         is_user_add_product_to_favorite=is_user_add_product_to_favorite
+    )
+
+
+@blueprint.route('/sorting', methods=['POST'])
+def product_sorting():
+    """Сортировка товаров по цене"""
+
+    title = "Каталог товаров"
+    sorting_product_form = SortingProductForm()
+    sorting = sorting_product_form.type_sorting.data
+
+    if sorting == 'product_price_min_to_max':
+        products = Product.query.order_by(Product.price).all()
+    elif sorting == 'product_price_max_to_min':
+        products = Product.query.order_by(Product.price.desc()).all()
+    
+    return render_template(
+        'marketplace/index.html', 
+        page_title=title, 
+        products=products, 
+        is_user_add_product_to_favorite=is_user_add_product_to_favorite,
+        sorting_product_form=sorting_product_form
     )

@@ -1,6 +1,7 @@
 {% extends "base.html" %}
 
 {% block content %}
+{% include 'marketplace/product_sort.html' %}
     <div class="row row-cols-1 row-cols-md-3 g-4">
         {% for product in products %}
             <div class="col" style="margin-bottom: 15px">

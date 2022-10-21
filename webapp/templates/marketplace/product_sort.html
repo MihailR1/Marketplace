@@ -1,0 +1,5 @@
+<form action="{{ url_for('marketplace.product_sorting') }}" class="form-inline my-2 my-lg-0" method="POST">
+    {{ sorting_product_form.hidden_tag() }}
+    {{ sorting_product_form.type_sorting() }}
+    {{ sorting_product_form.submit() }}
+</form>

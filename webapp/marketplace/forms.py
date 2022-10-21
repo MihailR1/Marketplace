@@ -29,3 +29,8 @@ class SearchForm(FlaskForm):
                                render_kw={"class": "form-control mr-sm-2", "placeholder": "Найти товар",
                                           "autocomplete": "off"})
     submit = SubmitField('Поиск', render_kw={"class": "btn btn-outline-success my-2 my-sm-0"})
+
+
+class SortingProductForm(FlaskForm):
+    type_sorting = SelectField('Сортировка', choices=[('product_price_min_to_max', 'Сначала недорогие'), ('product_price_max_to_min', 'Сначала дорогие')], render_kw={"class": "form-control"})
+    submit = SubmitField('Выполнить', render_kw={"class": "btn btn-outline-success my-2 my-sm-0"})
