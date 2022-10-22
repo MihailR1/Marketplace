@@ -4,6 +4,7 @@ from flask_login import current_user, login_user, logout_user
 from webapp.db import db
 from webapp.user.forms import LoginForm, RegistrationForm
 from webapp.user.models import User
+from webapp.services.service_send_email import send_hello_email_to_user
 
 blueprint = Blueprint('user', __name__, url_prefix='/users')
 
@@ -60,6 +61,7 @@ def process_reg():
         db.session.add(new_user)
         db.session.commit()
         flash('Вы успешно зарегистрировались')
+        send_hello_email_to_user(form.email.data)
         return redirect(url_for('user.login'))
     else:
         for field, errors in form.errors.items():
