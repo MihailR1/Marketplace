@@ -8,6 +8,7 @@ test.py
 run.bat
 webapp.db
 media/
+logs/
 
 # C extensions
 *.so

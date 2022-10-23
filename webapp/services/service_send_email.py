@@ -1,18 +1,44 @@
+import json
+
 import requests
 from enum import Enum
+from loguru import logger
 
 from webapp.config import UNISENDER_KEY, SEND_EMAIL_URL, EMAIL_SENDER_NAME, SENDER_EMAIL
+from webapp.user.models import User
+
+logger.add('../logs/service_send_emails.log', format='[{time:YYYY-MM-DD HH:mm:ss}] [{level}] |  {message}',
+           level='WARNING')
 
 
 class EmailLetter(Enum):
-    def send_hello_email_to_user(self):
-        email_subject = 'Подарочный купон Super1Site'
-        email_body = 'Спасибо за регистрацию на нашем сайт'
-        user_email = self
-        return send_email_to_user(user_email, email_subject, email_body)
+    hello_letter = 'send_hello_email_to_user'
 
 
-def send_email_to_user(user_email, email_subject, email_body, user_name=None):
+def send_email(event: EmailLetter, user: User) -> None:
+    event_to_email_letter_enum = {EmailLetter.hello_letter: hello_email_to_user}
+    response = event_to_email_letter_enum[event](user)
+
+    if response:
+        try:
+            response = response.json()
+            error = response.get('error', None)
+            if error:
+                logger.error(f'Ошибка в формировании запроса: {error}')
+            logger.info(f'Успешно отправили письмо {user.email}')
+        except json.JSONDecodeError as error:
+            logger.exception(f'Получен ответ с ошибкой: {error}')
+
+
+def hello_email_to_user(user_handler: User) -> requests.Response | None:
+    email_subject = 'Подарочный купон Super1Site'
+    email_body = 'Спасибо за регистрацию на нашем сайт'
+    user_email = user_handler.email
+    response = send_email_using_service(user_email, email_subject, email_body)
+    return response
+
+
+def send_email_using_service(user_email, email_subject, email_body, user_name=None) -> requests.Request | None:
     email_unsubscribe_id = 1
     params_send_email = {
         'format': 'json',
@@ -24,28 +50,9 @@ def send_email_to_user(user_email, email_subject, email_body, user_name=None):
         'subject': email_subject,
         'body': email_body,
     }
-
     try:
         response = requests.get(SEND_EMAIL_URL, params=params_send_email)
-        result = response.json()
-        error = result.get('error', None)
-        if error:
-            return error
-    except Exception as error:
-        return error
-
-    return True
-
-
-def email_handler(enum_event, user_handler):
-    print(enum_event)
-    try:
-        enum_event(user_handler)
-        print('Success')
-    except (ValueError, requests.exceptions.RequestException, requests.exceptions.ConnectionError) as err:
-        print('Принт ошибки')
-        print(err)
-
-
-email_handler(EmailLetter.send_hello_email_to_user, 'MihailR.20@yandex.ru')
-
+    except requests.RequestException as error:
+        logger.exception(f'Ошибка во время запроса: {error}')
+        response = None
+    return response
