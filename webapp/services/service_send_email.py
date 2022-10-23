@@ -1,41 +1,51 @@
-import os
-
 import requests
-from dotenv import load_dotenv
+from enum import Enum
 
-load_dotenv()
-
-API = os.environ['UNISENDER_API']
-SEND_EMAIL_URL = 'https://api.unisender.com/ru/api/sendEmail'
-
-sender_name = 'Интернет Магазин SuperSite'
-sender_email = 'no-reply@super1site.ru'
-email_unsubscribe_id = 1
-email_subject = 'Подарочный купон Super1Site'
-email_body = 'Спасибо за регистрацию на нашем сайт'
+from webapp.config import UNISENDER_KEY, SEND_EMAIL_URL, EMAIL_SENDER_NAME, SENDER_EMAIL
 
 
-def send_hello_email_to_user(user_email):
-    user_email = user_email
+class EmailLetter(Enum):
+    def send_hello_email_to_user(self):
+        email_subject = 'Подарочный купон Super1Site'
+        email_body = 'Спасибо за регистрацию на нашем сайт'
+        user_email = self
+        return send_email_to_user(user_email, email_subject, email_body)
+
+
+def send_email_to_user(user_email, email_subject, email_body, user_name=None):
+    email_unsubscribe_id = 1
     params_send_email = {
         'format': 'json',
-        'api_key': API,
+        'api_key': UNISENDER_KEY,
+        'sender_name': EMAIL_SENDER_NAME,
+        'sender_email': SENDER_EMAIL,
+        'list_id': email_unsubscribe_id,
         'email': user_email,
-        'sender_name': sender_name,
-        'sender_email': sender_email,
         'subject': email_subject,
         'body': email_body,
-        'list_id': email_unsubscribe_id
     }
-    is_email_send = True
+
     try:
         response = requests.get(SEND_EMAIL_URL, params=params_send_email)
         result = response.json()
-        if result.get('error', None):
-            is_email_send = False
-    except (ValueError, requests.JSONDecodeError):
-        is_email_send = False
-    except requests.exceptions.RequestException:
-        is_email_send = False
+        error = result.get('error', None)
+        if error:
+            return error
+    except Exception as error:
+        return error
 
-    return is_email_send
+    return True
+
+
+def email_handler(enum_event, user_handler):
+    print(enum_event)
+    try:
+        enum_event(user_handler)
+        print('Success')
+    except (ValueError, requests.exceptions.RequestException, requests.exceptions.ConnectionError) as err:
+        print('Принт ошибки')
+        print(err)
+
+
+email_handler(EmailLetter.send_hello_email_to_user, 'MihailR.20@yandex.ru')
+
