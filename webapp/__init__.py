@@ -1,6 +1,7 @@
 from flask import Flask
 from flask_login import LoginManager
 from flask_migrate import Migrate
+from loguru import logger
 
 from webapp.cache import cache
 from webapp.db import db
@@ -10,6 +11,10 @@ from webapp.marketplace.forms import SearchForm
 from webapp.user.models import User
 from webapp.user.views import blueprint as user_blueprint
 from webapp.services.service_cart import get_unique_products_in_cart
+
+logger.add('../logs/working_log.log',
+           format='[{time:YYYY-MM-DD HH:mm:ss}] [{level}] [{file}:{function}:{line}] | {message}',
+           level='INFO', colorize=True)
 
 
 def create_app():
