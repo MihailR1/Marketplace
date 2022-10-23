@@ -1,22 +1,18 @@
 import json
 
 import requests
-from enum import Enum
 from loguru import logger
 
 from webapp.config import UNISENDER_KEY, SEND_EMAIL_URL, EMAIL_SENDER_NAME, SENDER_EMAIL
 from webapp.user.models import User
+from webapp.user.enums import EmailToUser
 
 logger.add('../logs/service_send_emails.log', format='[{time:YYYY-MM-DD HH:mm:ss}] [{level}] |  {message}',
            level='WARNING')
 
 
-class EmailLetter(Enum):
-    hello_letter = 'send_hello_email_to_user'
-
-
-def send_email(event: EmailLetter, user: User) -> None:
-    event_to_email_letter_enum = {EmailLetter.hello_letter: hello_email_to_user}
+def send_email(event: EmailToUser, user: User) -> None:
+    event_to_email_letter_enum = {EmailToUser.hello_letter: hello_email_to_user}
     response = event_to_email_letter_enum[event](user)
 
     if response:
@@ -25,7 +21,6 @@ def send_email(event: EmailLetter, user: User) -> None:
             error = response.get('error', None)
             if error:
                 logger.error(f'Ошибка в формировании запроса: {error}')
-            logger.info(f'Успешно отправили письмо {user.email}')
         except json.JSONDecodeError as error:
             logger.exception(f'Получен ответ с ошибкой: {error}')
 
