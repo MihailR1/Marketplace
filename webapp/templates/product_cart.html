@@ -2,7 +2,7 @@
     {% for product in products %}
         <div class="col" style="margin-bottom: 15px">
             <div class="card h-100" style="width: 18rem">
-                <img src="{% if product.photo %}{{ product.photos[0].photos_path }}{% endif %}" class="card-img-top" -->
+                <img src="{% if product.photo %}{{ product.photos[0].photos_path }}{% endif %}" class="card-img-top"
                      alt="{{ product.name }}">
                 <div class="card-body">
                     <a href="{{ url_for('marketplace.product_page', product_id=product.id) }}">

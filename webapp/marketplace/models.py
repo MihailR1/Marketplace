@@ -35,7 +35,7 @@ class Product(db.Model):
 class Photo(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     product_id = db.Column(db.Integer, db.ForeignKey(Product.id))
-    product = relationship('Product', backref='photos')
+    product = relationship('Product', backref='photo')
     photos_path = db.Column(db.String, nullable=False)
 
     def __repr__(self):
