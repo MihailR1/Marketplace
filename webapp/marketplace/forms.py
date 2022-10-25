@@ -3,7 +3,7 @@ from wtforms import IntegerField, StringField, SubmitField, TextAreaField, Selec
 from wtforms.validators import DataRequired, NumberRange
 
 from webapp.marketplace.models import Category
-from webapp.marketplace.enum import ProductSortingTypes
+from webapp.marketplace.enum_marketplace import ProductSortingTypes
 
 
 class AddNewProductForm(FlaskForm):
