@@ -1,8 +1,10 @@
 from flask import Flask
 from flask_login import LoginManager
 from flask_migrate import Migrate
+from loguru import logger
 
 from webapp.cache import cache
+from webapp.config import LOG_FILES_PATH
 from webapp.db import db
 from webapp.marketplace.models import Category, Product, ShoppingCart
 from webapp.marketplace.views import blueprint as marketplace_blueprint
@@ -18,6 +20,8 @@ def create_app():
     cache.init_app(app)  # Подключение Кэша
     db.init_app(app)  # Инициализация БД
     migrate = Migrate(app, db)  # Для миграции-изменения структуры БД
+    logger.add(LOG_FILES_PATH, format='[{time:YYYY-MM-DD HH:mm:ss}] [{level}] [{file}:{function}:{line}] | {message}',
+               level='INFO', colorize=True)
 
     login_manager = LoginManager()
     login_manager.init_app(app)
