@@ -13,9 +13,6 @@ from webapp.user.models import User
 from webapp.user.views import blueprint as user_blueprint
 from webapp.services.service_cart import get_unique_products_in_cart
 
-logger.add(LOG_FILES_PATH, format='[{time:YYYY-MM-DD HH:mm:ss}] [{level}] [{file}:{function}:{line}] | {message}',
-           level='INFO', colorize=True)
-
 
 def create_app():
     app = Flask(__name__)
@@ -23,6 +20,8 @@ def create_app():
     cache.init_app(app)  # Подключение Кэша
     db.init_app(app)  # Инициализация БД
     migrate = Migrate(app, db)  # Для миграции-изменения структуры БД
+    logger.add(LOG_FILES_PATH, format='[{time:YYYY-MM-DD HH:mm:ss}] [{level}] [{file}:{function}:{line}] | {message}',
+               level='INFO', colorize=True)
 
     login_manager = LoginManager()
     login_manager.init_app(app)

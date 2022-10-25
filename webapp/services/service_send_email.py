@@ -16,11 +16,11 @@ def send_email(event: EmailEventsForUser, user: User) -> None:
 
     if response:
         try:
-            response = response.json()
+            response_serialize = response.json()
         except json.JSONDecodeError as error:
             logger.exception(f'Получен ответ с ошибкой: {error}')
 
-        error = response.get('error', None)
+        error = response_serialize.get('error', None)
         if error:
             logger.error(f'Ошибка в формировании запроса: {error}')
 
