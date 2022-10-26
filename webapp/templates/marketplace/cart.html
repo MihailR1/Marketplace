@@ -7,6 +7,11 @@
                 <h5 class="card-title">В корзине {{ count_all_products }} шт. товаров, на
                     сумму {{ count_total_money }} рублей.</h5>
             </div>
+            {% if products_in_cart %}
+                <div class="row-sm-6">
+                    <a href="{{ url_for('marketplace.payment_process', payment_sum=count_total_money, order_number=order_number) }}"> Оплатить заказ</a>
+                </div>
+            {% endif %}
         </div>
         <div class="row">
             {% for product, quantity in products_in_cart.items() %}
@@ -19,7 +24,7 @@
                             <p class="card-text">Цена: {{ product.price }} руб.</p>
                             <p class="card-text">Количество: {{ quantity }} шт.</p>
                             <p class="card-text">Сумма: {{ product.price*quantity }} руб.</p>
-                            <a href="#" class="btn btn-primary" onclick="deleteFromCart({{ product.id }})"
+                            <a href="{{ url_for('marketplace.del_product_from_cart', product_id=product.id) }}" class="btn btn-primary" onclick="deleteFromCart({{ product.id }})"
                                id="delete_from_cart_{{ product.id }}">Удалить из корзины</a>
                         </div>
                     </div>

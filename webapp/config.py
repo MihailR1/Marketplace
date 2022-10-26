@@ -18,3 +18,5 @@ UNISENDER_API_KEY = os.environ['UNISENDER_API_KEY']
 SEND_EMAIL_URL = 'https://api.unisender.com/ru/api/sendEmail'
 EMAIL_SENDER_NAME = 'Интернет Магазин SuperSite'
 SENDER_EMAIL = 'no-reply@super1site.ru'
+YOOMONEY_TOKEN = os.environ['YOOMONEY_TOKEN']
+YOOMONEY_WALLET = os.environ['YOOMONEY_WALLET']

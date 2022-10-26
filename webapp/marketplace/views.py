@@ -1,3 +1,4 @@
+import requests
 from flask import Blueprint, flash, render_template, redirect, url_for, abort, request, jsonify, session
 from flask_login import current_user, login_required
 
@@ -8,6 +9,7 @@ from webapp.services.service_photo import is_extension_allowed, save_files
 from webapp.services.service_cart import (get_product_by_id, search_products_by_text, get_products_in_cart,
                                           get_unique_products_in_cart)
 from webapp.services.service_favorite_product import is_user_add_product_to_favorite
+from webapp.services.service_payment_process import prepare_link_for_payment, generate_order_number
 
 blueprint = Blueprint('marketplace', __name__)
 
@@ -139,11 +141,46 @@ def cart():
                     if product.id == int(id_product):
                         products_in_cart[product] = quantity
                         break
-    count_all_products = sum(products_in_cart.values())
-    count_total_money = sum({product.price * quantity for product, quantity in products_in_cart.items()})
+    count_all_products = 0
+    count_total_money = 0
+    order_number = session.get('order_number', None)
+
+    if not order_number:
+        session['order_number'] = generate_order_number()
+        order_number = session['order_number']
+        session.modified = True
+
+    if products_in_cart:
+        count_all_products = sum(products_in_cart.values())
+        count_total_money = sum({product.price * quantity for product, quantity in products_in_cart.items()})
 
     return render_template('marketplace/cart.html', page_title=title, products_in_cart=products_in_cart,
-                           count_all_products=count_all_products, count_total_money=count_total_money)
+                           count_all_products=count_all_products, count_total_money=count_total_money,
+                           order_number=order_number)
+
+
+@blueprint.route('/del_product_from_cart/<int:product_id>')
+def del_product_from_cart(product_id):
+    if not current_user.is_authenticated:
+        del session['shopping_cart'][str(product_id)]
+        session.modified = True
+    else:
+        delete_product_from_cart = ShoppingCart.query.filter(
+            ShoppingCart.user_id == current_user.id,
+            ShoppingCart.product_id == product_id
+        ).delete()
+        db.session.commit()
+    return redirect(url_for('marketplace.cart'))
+
+
+@blueprint.route('/payment_process/<int:payment_sum>/<order_number>')
+def payment_process(payment_sum, order_number):
+    try:
+        paymemnt_link = prepare_link_for_payment(payment_sum, order_number)
+    except requests.RequestException:
+        payment_status = 'Оплата временно не доступна'
+        return render_template('marketplace/payment_status.html', payment_status=payment_status)
+    return redirect(paymemnt_link, code=302)
 
 
 @blueprint.route('/product/<int:product_id>')
