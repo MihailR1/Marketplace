@@ -9,7 +9,7 @@
             </div>
             {% if products_in_cart %}
                 <div class="row-sm-6">
-                    <a href="{{ url_for('marketplace.payment_process', payment_sum=count_total_money, order_number=order_number) }}"> Оплатить заказ</a>
+                    <a href="{{ url_for('marketplace.payment_process', payment_sum=count_total_money) }}" target="_blank"> Оплатить заказ</a>
                 </div>
             {% endif %}
         </div>

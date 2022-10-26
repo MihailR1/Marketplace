@@ -3,6 +3,9 @@
 {% block content %}
     <div class="row">
         <div class="col-sm-6">
-            <h5 class="card-title">{{ payment_status }}</h5>
+            <h5 class="card-title" id="payment_status_text">{{ payment_status }}</h5>
         </div>
+    </div>
+    <script src="{{ url_for('static', filename='check_payment.js') }}"></script>
+
 {% endblock %}
