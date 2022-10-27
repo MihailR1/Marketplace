@@ -22,14 +22,16 @@ def index():
 
     user_sorting_type = request.args.get('type_sorting')
     
-    try:
-        if user_sorting_type:
+    
+    if user_sorting_type:
+        try:
             products = process_sorting_product_types(user_sorting_type)
-        else:
+        except ValueError:
+            flash("Не верный выбор сортировки")
             products = Product.query.all()
-    except ValueError:
-        flash("Не верный выбор сортировки")
+    else:
         products = Product.query.all()
+    
 
     return render_template(
         'marketplace/index.html', 
