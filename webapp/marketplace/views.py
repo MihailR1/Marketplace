@@ -170,13 +170,6 @@ def del_product_from_cart(product_id):
 
 @blueprint.route('/payment_process/<int:payment_sum>')
 def payment_process(payment_sum):
-    # if current_user.is_authenticated:
-    #     user_id = current_user.id
-    # else:
-    # session['user_id'] = str(uuid4())
-    # new_order = ShoppingOrder(order_id=order_number, user_id=user_id, amount=payment_sum)
-    # db.session.add(new_order)
-    # db.session.commit()
     session['order_number'] = str(uuid4())
     order_number = session['order_number']
 
@@ -184,7 +177,7 @@ def payment_process(payment_sum):
         payment_link = prepare_link_for_payment(payment_sum, order_number)
     except requests.RequestException:
         payment_status = 'Оплата временно не доступна'
-        return render_template('marketplace/payment_status.html', payment_status=payment_status)
+        return render_template('marketplace/payment_unavailable.html', payment_status=payment_status)
 
     return redirect(payment_link, code=302)
 

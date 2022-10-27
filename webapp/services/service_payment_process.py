@@ -7,7 +7,7 @@ def prepare_link_for_payment(payment_sum, order_number) -> Quickpay:
     payment_link = Quickpay(
         receiver=YOOMONEY_WALLET,
         quickpay_form="shop",
-        targets=f"Оплата по заказу № {order_number}",
+        targets=f"Оплата по заказу №{order_number}",
         paymentType="SB",
         sum=payment_sum,
         label=order_number,

@@ -63,12 +63,3 @@ class ShoppingCart(db.Model):
     def __repr__(self):
         return f'<ShoppingCart id {self.id}, user_id: {self.user_id}, products: {self.product_info}>'
 
-
-class ShoppingOrder(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    order_id = db.Column(db.String(70))
-    user_id = db.Column(db.String(70))
-    amount = db.Column(db.Integer)
-
-    def __repr__(self):
-        return f'<ShoppingOrder {self.id}, order id: {self.order_id}, user: {self.user_id}>'
