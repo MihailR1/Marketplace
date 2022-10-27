@@ -7,6 +7,7 @@ import requests
 import pandas as pd
 from loguru import logger
 from dotenv import load_dotenv
+from sqlalchemy.exc import SQLAlchemyError
 
 from webapp import create_app
 from webapp.db import db
@@ -67,7 +68,11 @@ def save_products(products_frame) -> None:
                 size=row['Размер'],
                 quantity=row['Остаток'],
             )
-            db.session.add(product)
+            try:
+                db.session.add(product)
+            except SQLAlchemyError as error:
+                logger.exception(f'Ошибка при сохранении продукта в БД {error}')
+                db.session.rollback()
 
     db.session.commit()
 
@@ -78,16 +83,22 @@ def save_photos_in_path(photos_url, product_id) -> list:
 
     for index, photo_url in enumerate(photos_url_list):
         photo_extension = photo_url.split('.')[-1]
-        photo_response = requests.get(photo_url)
 
-        if photo_response.status_code == 200:
-            product_path = os.path.join(UPLOAD_PATH, f'product_{product_id}')
-            os.makedirs(product_path, exist_ok=True)
-            target_name_and_path_for_product = os.path.join(product_path, f'{index}.{photo_extension}')
-            list_with_photos_path.append(target_name_and_path_for_product)
+        try:
+            photo_response = requests.get(photo_url)
+        except requests.RequestException as error:
+            logger.exception(f'Ошибка обращения к фотографии продукта {error}')
+            photo_response = None
 
-            with open(target_name_and_path_for_product, 'wb') as photo_path:
-                photo_path.write(photo_response.content)
+        if photo_response:
+            if photo_response.status_code == 200:
+                product_path = os.path.join(UPLOAD_PATH, f'product_{product_id}')
+                os.makedirs(product_path, exist_ok=True)
+                target_name_and_path_for_product = os.path.join(product_path, f'{index}.{photo_extension}')
+                list_with_photos_path.append(target_name_and_path_for_product)
+
+                with open(target_name_and_path_for_product, 'wb') as photo_path:
+                    photo_path.write(photo_response.content)
 
     return list_with_photos_path
 
@@ -98,11 +109,18 @@ def save_photos_for_products(products_frame) -> None:
     product_and_id = {product.name: product.id for product in products}
 
     for _, row in products_frame.iterrows():
-        product_id = product_and_id[row['Заголовок']]
-        photos_path = save_photos_in_path(row['Изображения'], product_id)
-        for path in photos_path:
-            photo_product = Photo(product_id=product_id, photos_path=path)
-            db.session.add(photo_product)
+        product_id = product_and_id.get(row['Заголовок'], None)
+
+        if product_id:
+            photos_path = save_photos_in_path(row['Изображения'], product_id)
+            for path in photos_path:
+                photo_product = Photo(product_id=product_id, photos_path=path)
+
+                try:
+                    db.session.add(photo_product)
+                except SQLAlchemyError as error:
+                    logger.exception(f'Ошибка при сохранении фото для продукта в БД {error}')
+                    db.session.rollback()
 
     db.session.commit()
 
@@ -114,7 +132,7 @@ if __name__ == '__main__':
         logger.info('Запустили процесс сохранения товаров в БД')
         products_data = pd.read_excel('catalog.xlsx', na_filter=False)
         products_frame = dataframe_from_excel(products_data)
-        logger.info('Запустили процесс сохранения фото для товаров в БД')
         save_products(products_frame)
+        logger.info('Запустили процесс сохранения фото для товаров в БД')
         save_photos_for_products(products_frame)
         logger.info('Сохранение товаров и фото закончено')

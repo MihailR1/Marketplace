@@ -34,3 +34,8 @@ class RegistrationForm(FlaskForm):
             user_count = User.query.filter_by(phone_number=phone_number.data).count()
             if user_count > 0:
                 raise ValidationError('Пользователь с таким номером телефона уже существует')
+
+
+class SmsAuthForm(FlaskForm):
+    phone_number = StringField('Номер телефона', render_kw={"class": "mask-phone form-control"})
+    submit = SubmitField('Отправить!', render_kw={"class": "btn btn-primary"})

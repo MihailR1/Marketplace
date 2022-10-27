@@ -20,3 +20,5 @@ EMAIL_SENDER_NAME = 'Интернет Магазин SuperSite'
 SENDER_EMAIL = 'no-reply@super1site.ru'
 YOOMONEY_TOKEN = os.environ['YOOMONEY_TOKEN']
 YOOMONEY_WALLET = os.environ['YOOMONEY_WALLET']
+MAINSMS_PROJECT_NAME = os.environ['MAINSMS_PROJECT_NAME']
+MAINSMS_API = os.environ['MAINSMS_API']

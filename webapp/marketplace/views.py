@@ -6,7 +6,7 @@ from flask_login import current_user, login_required
 
 from webapp.db import db
 from webapp.marketplace.forms import AddNewProductForm, SearchForm
-from webapp.marketplace.models import Category, Product, Photo, ShoppingCart, UserFavoriteProduct, ShoppingOrder
+from webapp.marketplace.models import Category, Product, Photo, ShoppingCart, UserFavoriteProduct
 from webapp.services.service_photo import is_extension_allowed, save_files
 from webapp.services.service_cart import (get_product_by_id, search_products_by_text, get_products_in_cart,
                                           get_unique_products_in_cart)
