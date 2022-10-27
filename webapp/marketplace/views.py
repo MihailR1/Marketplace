@@ -2,12 +2,14 @@ from flask import Blueprint, flash, render_template, redirect, url_for, abort, r
 from flask_login import current_user, login_required
 
 from webapp.db import db
-from webapp.marketplace.forms import AddNewProductForm, SearchForm
+from webapp.marketplace.forms import AddNewProductForm, SearchForm, SortingProductForm
 from webapp.marketplace.models import Category, Product, Photo, ShoppingCart, UserFavoriteProduct
 from webapp.services.service_photo import is_extension_allowed, save_files
 from webapp.services.service_cart import (get_product_by_id, search_products_by_text, get_products_in_cart,
                                           get_unique_products_in_cart)
 from webapp.services.service_favorite_product import is_user_add_product_to_favorite
+from webapp.services.service_sorting import process_sorting_product_types
+
 
 blueprint = Blueprint('marketplace', __name__)
 
@@ -15,11 +17,30 @@ blueprint = Blueprint('marketplace', __name__)
 @blueprint.route('/')
 def index():
     title = "Каталог товаров"
-    products = Product.query.all()
+    sorting_product_form = SortingProductForm()
     products_in_cart = get_products_in_cart()
-    return render_template('marketplace/index.html', page_title=title, products=products,
-                           products_in_cart=products_in_cart,
-                           is_user_add_product_to_favorite=is_user_add_product_to_favorite)
+
+    user_sorting_type = request.args.get('type_sorting')
+    
+    
+    if user_sorting_type:
+        try:
+            products = process_sorting_product_types(user_sorting_type)
+        except ValueError:
+            flash("Не верный выбор сортировки")
+            products = Product.query.all()
+    else:
+        products = Product.query.all()
+    
+
+    return render_template(
+        'marketplace/index.html', 
+        page_title=title, 
+        products=products,
+        products_in_cart=products_in_cart,
+        is_user_add_product_to_favorite=is_user_add_product_to_favorite,
+        sorting_product_form=sorting_product_form
+    )
 
 
 @blueprint.route('/search', methods=['POST'])
@@ -174,9 +195,13 @@ def category_page(category_id):
     if not category:
         abort(404)
 
-    return render_template('marketplace/category_page.html', page_title=title, products=products,
-                           products_in_cart=products_in_cart,
-                           is_user_add_product_to_favorite=is_user_add_product_to_favorite)
+    return render_template(
+        'marketplace/category_page.html', 
+        page_title=title, 
+        products=products,
+        products_in_cart=products_in_cart,
+        is_user_add_product_to_favorite=is_user_add_product_to_favorite
+    )
 
 
 @login_required
@@ -278,3 +303,4 @@ def favorite_page():
     else:
         return render_template(
             'marketplace/favorite_page.html', page_title=title)
+
