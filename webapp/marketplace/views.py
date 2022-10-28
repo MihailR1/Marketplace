@@ -5,13 +5,17 @@ from flask import Blueprint, flash, render_template, redirect, url_for, abort, r
 from flask_login import current_user, login_required
 
 from webapp.db import db
-from webapp.marketplace.forms import AddNewProductForm, SearchForm
+from webapp.marketplace.forms import AddNewProductForm, SearchForm, CheckoutForm
+from webapp.user.enums import UserRole
+from webapp.user.models import User
 from webapp.marketplace.models import Category, Product, Photo, ShoppingCart, UserFavoriteProduct, ShoppingOrder
 from webapp.services.service_photo import is_extension_allowed, save_files
 from webapp.services.service_cart import (get_product_by_id, search_products_by_text, get_products_in_cart,
                                           get_unique_products_in_cart)
 from webapp.services.service_favorite_product import is_user_add_product_to_favorite
 from webapp.services.service_payment_process import prepare_link_for_payment, is_order_paid
+from webapp.user.enums import EmailEventsForUser
+from webapp.services.service_send_email import send_email
 
 blueprint = Blueprint('marketplace', __name__)
 
@@ -168,13 +172,82 @@ def del_product_from_cart(product_id):
     return redirect(url_for('marketplace.cart'))
 
 
-@blueprint.route('/payment_process/<int:payment_sum>')
-def payment_process(payment_sum):
-    session['order_number'] = str(uuid4())
-    order_number = session['order_number']
+@blueprint.route('/checkout')
+def checkout_page():
+    title = 'Оформление заказа'
+    if current_user.is_authenticated:
+        user = User.query.filter(User.id == current_user.id).first()
+        form = CheckoutForm(obj=user)
+    else:
+        form = CheckoutForm()
+
+    return render_template('marketplace/checkout.html', page_title=title, form=form)
+
+
+@blueprint.route('/checkout_process', methods=['POST'])
+def checkout_process():
+    title = 'Оформление заказа'
+    form = CheckoutForm()
+    if form.validate_on_submit():
+        user = User.query.filter(User.email == form.email.data).first()
+        if user:
+            user.phone_number = form.phone_number.data
+            user.shipping_adress = form.shipping_adress.data
+            user.full_name = form.full_name.data
+            db.session.commit()
+            user_id = user.id
+        else:
+            create_user = User(email=form.email.data, phone_number=form.phone_number.data,
+                               shipping_adress=form.shipping_adress.data, full_name=form.full_name.data,
+                               role=UserRole.user.value)
+            generated_user_password = str(uuid4())
+            create_user.set_password(generated_user_password)
+            db.session.add(create_user)
+            db.session.commit()
+            send_email(EmailEventsForUser.letter_with_account_password, create_user, password=generated_user_password)
+            user_id = create_user.id
+
+            products_in_cart = session.get('shopping_cart', None)
+            if products_in_cart:
+                products_id = {int(prod_id): quantity for prod_id, quantity in products_in_cart.items()}
+                query_products = Product.query.filter(Product.id.in_(products_id.keys())).all()
+
+                for product in query_products:
+                    for id_product, quantity in products_id.items():
+                        if product.id == int(id_product):
+                            save_product_in_cart = ShoppingCart(user_id=create_user.id, product_id=product.id,
+                                                                quantity=quantity)
+                            db.session.add(save_product_in_cart)
+                            break
+                    db.session.commit()
+
+        return redirect(url_for('marketplace.payment_process', user_id=user_id))
+
+    else:
+        for field, errors in form.errors.items():
+            for error in errors:
+                flash(f'Исправьте ошибку в поле {getattr(form, field).label.text}: {error}')
+
+    return redirect(url_for('marketplace.checkout_page'))
+
+
+@blueprint.route('/payment_process/<int:user_id>')
+def payment_process(user_id):
+    shopping_cart = ShoppingCart.query.filter(ShoppingCart.user_id == user_id).all()
+    order_number = str(uuid4())
+    payment_amount = sum([product.quantity * product.product_info.price for product in shopping_cart])
+
+    new_order = ShoppingOrder(order_id=order_number, user_id=user_id, amount=payment_amount,
+                              is_order_paid=False)
+    db.session.add(new_order)
+    db.session.commit()
+
+    if not current_user.is_authenticated:
+        session['order_number'] = order_number
+        session.modified = True
 
     try:
-        payment_link = prepare_link_for_payment(payment_sum, order_number)
+        payment_link = prepare_link_for_payment(payment_amount, order_number)
     except requests.RequestException:
         payment_status = 'Оплата временно не доступна'
         return render_template('marketplace/payment_unavailable.html', payment_status=payment_status)
@@ -184,7 +257,18 @@ def payment_process(payment_sum):
 
 @blueprint.route('/check_payment', methods=['POST'])
 def check_payment():
-    order_number = session.get('order_number', None)
+    if current_user.is_authenticated:
+        shopping_order = ShoppingOrder.query.filter(ShoppingOrder.user_id == current_user.id).all()
+    else:
+        order_number = session.get('order_number', None)
+        shopping_order = ShoppingOrder.query.filter(ShoppingOrder.order_id == order_number).all()
+
+    try:
+        shopping_order = shopping_order[-1]
+    except IndexError:
+        return jsonify({"payment_status": False})
+
+    order_number = shopping_order.order_id
     payment_status = False
 
     if order_number:
@@ -194,17 +278,15 @@ def check_payment():
             pass
 
     if payment_status:
-        try:
-            del session['order_number']
+        if not current_user.is_authenticated:
             del session['shopping_cart']
             del session['unique_products_in_cart']
             session.modified = True
-        except KeyError:
-            pass
-        if current_user.is_authenticated:
-            delete_product_from_cart = ShoppingCart.query.filter(
-                ShoppingCart.user_id == current_user.id).delete()
-            db.session.commit()
+
+        shopping_order.is_order_paid = True
+        paid_shopping_cart = ShoppingCart.query.filter(ShoppingCart.user_id == shopping_order.user.id).delete()
+        db.session.commit()
+        send_email(EmailEventsForUser.order_successfully_paid, shopping_order.user)
 
     return jsonify({"payment_status": payment_status})
 

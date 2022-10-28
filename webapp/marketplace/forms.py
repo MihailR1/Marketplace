@@ -1,6 +1,6 @@
 from flask_wtf import FlaskForm
 from wtforms import IntegerField, StringField, SubmitField, TextAreaField, SelectField, MultipleFileField
-from wtforms.validators import DataRequired, NumberRange
+from wtforms.validators import DataRequired, NumberRange, Email
 
 from webapp.marketplace.models import Category
 
@@ -29,3 +29,11 @@ class SearchForm(FlaskForm):
                                render_kw={"class": "form-control mr-sm-2", "placeholder": "Найти товар",
                                           "autocomplete": "off"})
     submit = SubmitField('Поиск', render_kw={"class": "btn btn-outline-success my-2 my-sm-0"})
+
+
+class CheckoutForm(FlaskForm):
+    email = StringField('Электронный адрес', validators=[DataRequired(), Email()], render_kw={"class": "form-control"})
+    phone_number = StringField('Номер телефона', render_kw={"class": "form-control"})
+    full_name = StringField('Полное имя', render_kw={"class": "form-control"})
+    shipping_adress = StringField('Адрес доставки', render_kw={"class": "form-control"})
+    submit = SubmitField('Перейти к оплате', render_kw={"class": "btn btn-primary"})

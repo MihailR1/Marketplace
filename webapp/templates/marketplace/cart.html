@@ -9,7 +9,7 @@
             </div>
             {% if products_in_cart %}
                 <div class="row-sm-6">
-                    <a href="{{ url_for('marketplace.payment_process', payment_sum=count_total_money) }}" target="_blank"> Оплатить заказ</a>
+                    <a href="{{ url_for('marketplace.checkout_page') }}">Оформить заказ</a>
                 </div>
             {% endif %}
         </div>
@@ -24,7 +24,8 @@
                             <p class="card-text">Цена: {{ product.price }} руб.</p>
                             <p class="card-text">Количество: {{ quantity }} шт.</p>
                             <p class="card-text">Сумма: {{ product.price*quantity }} руб.</p>
-                            <a href="{{ url_for('marketplace.del_product_from_cart', product_id=product.id) }}" class="btn btn-primary" onclick="deleteFromCart({{ product.id }})"
+                            <a href="{{ url_for('marketplace.del_product_from_cart', product_id=product.id) }}"
+                               class="btn btn-primary" onclick="deleteFromCart({{ product.id }})"
                                id="delete_from_cart_{{ product.id }}">Удалить из корзины</a>
                         </div>
                     </div>

@@ -63,3 +63,14 @@ class ShoppingCart(db.Model):
     def __repr__(self):
         return f'<ShoppingCart id {self.id}, user_id: {self.user_id}, products: {self.product_info}>'
 
+
+class ShoppingOrder(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    is_order_paid = db.Column(db.Boolean)
+    user_id = db.Column(db.Integer, db.ForeignKey(User.id))
+    user = relationship('User', backref='shopping_orders')
+    order_id = db.Column(db.String(90))
+    amount = db.Column(db.Integer)
+
+    def __repr__(self):
+        return f'<ShoppingOrder {self.id}, order id: {self.order_id}, user: {self.user_id}>'

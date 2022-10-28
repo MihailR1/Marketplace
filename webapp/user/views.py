@@ -4,7 +4,7 @@ from flask_login import current_user, login_user, logout_user
 from webapp.db import db
 from webapp.user.forms import LoginForm, RegistrationForm
 from webapp.user.models import User
-from webapp.user.enums import EmailEventsForUser
+from webapp.user.enums import EmailEventsForUser, UserRole
 from webapp.services.service_send_email import send_email
 
 blueprint = Blueprint('user', __name__, url_prefix='/users')
@@ -56,7 +56,7 @@ def process_reg():
     if form.validate_on_submit():
         new_user = User(
             email=form.email.data,
-            role='user'
+            role=UserRole.user.value
         )
         new_user.set_password(form.password.data)
         db.session.add(new_user)
