@@ -37,5 +37,5 @@ class RegistrationForm(FlaskForm):
 
 
 class SmsAuthForm(FlaskForm):
-    phone_number = StringField('Номер телефона', render_kw={"class": "mask-phone form-control"})
+    phone_number = StringField('Номер телефона', validators=[DataRequired()], render_kw={"class": "mask-phone form-control"})
     submit = SubmitField('Отправить!', render_kw={"class": "btn btn-primary"})

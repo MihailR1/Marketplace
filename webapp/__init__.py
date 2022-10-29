@@ -21,7 +21,7 @@ def create_app():
     db.init_app(app)  # Инициализация БД
     migrate = Migrate(app, db)  # Для миграции-изменения структуры БД
     logger.add(LOG_FILES_PATH, format='[{time:YYYY-MM-DD HH:mm:ss}] [{level}] [{file}:{function}:{line}] | {message}',
-               level='INFO', colorize=True)
+               level='INFO')
 
     login_manager = LoginManager()
     login_manager.init_app(app)
