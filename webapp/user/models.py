@@ -1,7 +1,10 @@
+from datetime import datetime
+
 from flask_login import UserMixin
 from werkzeug.security import generate_password_hash, check_password_hash
 
 from webapp.db import db
+from webapp.user.enums import UserRole
 
 
 class User(db.Model, UserMixin):
@@ -11,7 +14,8 @@ class User(db.Model, UserMixin):
     full_name = db.Column(db.String(100))
     shipping_adress = db.Column(db.String(200))
     password = db.Column(db.String(128), nullable=False)
-    role = db.Column(db.String(20), index=True)
+    role = db.Column(db.Enum(UserRole), index=True)
+    registration_datetime = db.Column(db.DateTime, default=datetime.now())
 
     def set_password(self, password):
         self.password = generate_password_hash(password)
