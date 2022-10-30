@@ -3,7 +3,7 @@ from wtforms import IntegerField, StringField, SubmitField, TextAreaField, Selec
 from wtforms.validators import DataRequired, NumberRange, Email
 
 from webapp.marketplace.models import Category
-from webapp.marketplace.enum_marketplace import ProductSortingTypes
+from webapp.marketplace.enums import ProductSortingTypes
 
 
 class AddNewProductForm(FlaskForm):
@@ -38,7 +38,8 @@ class SortingProductForm(FlaskForm):
 
     def __init__(self, *args, **kwargs):
         super(SortingProductForm, self).__init__(*args, **kwargs)
-        self.type_sorting.choices = [[type_sorting.value, type_sorting.readable_values()] for type_sorting in ProductSortingTypes]
+        self.type_sorting.choices = [[type_sorting.value, type_sorting.readable_values()] for type_sorting in
+                                     ProductSortingTypes]
 
 
 class CheckoutForm(FlaskForm):

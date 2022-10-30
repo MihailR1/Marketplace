@@ -43,7 +43,7 @@ def send_email_about_successfully_paid_order(user: User, **kwargs) -> requests.R
     logger.info('Запустили функцию формирования email с уведомлением об успешной оплате')
     shopping_order = ShoppingOrder.query.filter(ShoppingOrder.user_id == user.id).all()[-1]
     email_subject = 'Заказ успешно оплачен'
-    email_body = f'Заказ №{shopping_order.order_id} на сумму {shopping_order.amount} руб. успешно оплачен'
+    email_body = f'Заказ №{shopping_order.order_number} на сумму {shopping_order.amount} руб. успешно оплачен'
     response = send_email_using_unisender(user.email, email_subject, email_body)
     return response
 

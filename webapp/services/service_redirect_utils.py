@@ -1,5 +1,5 @@
 from urllib.parse import urlparse, urljoin
-from flask import request
+from flask import request, url_for, redirect
 
 
 def is_safe_url(target):
@@ -14,3 +14,17 @@ def get_redirect_target():
             continue
         if is_safe_url(target):
             return target
+
+
+def redirect_back(default='marketplace.index', **kwargs):
+    for target in request.args.get('next'), request.referrer:
+        if not target:
+            continue
+        if is_safe_url(target):
+            return redirect(target)
+    return redirect(url_for(default, **kwargs))
+
+
+# https://stackoverflow.com/questions/14277067/redirect-back-in-flask
+def redirect_url(default='marketplace.index'):
+    return request.args.get('next') or request.referrer or url_for(default)

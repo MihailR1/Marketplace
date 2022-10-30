@@ -6,9 +6,9 @@ from flask import Blueprint, flash, render_template, redirect, url_for, abort, r
 from flask_login import current_user, login_required
 
 from webapp.db import db
-from webapp.marketplace.forms import AddNewProductForm, SearchForm, CheckoutForm, SortingProductForm
-from webapp.user.enums import UserRole
 from webapp.user.models import User
+from webapp.user.enums import EmailEventsForUser, UserRole
+from webapp.marketplace.forms import AddNewProductForm, SearchForm, CheckoutForm, SortingProductForm
 from webapp.marketplace.models import Category, Product, Photo, ShoppingCart, UserFavoriteProduct, ShoppingOrder
 from webapp.services.service_photo import is_extension_allowed, save_files
 from webapp.services.service_cart import (get_product_by_id, search_products_by_text, get_products_in_cart,
@@ -17,10 +17,8 @@ from webapp.services.service_cart import (get_product_by_id, search_products_by_
                                           save_unauthenticated_user_data_in_session)
 from webapp.services.service_favorite_product import is_user_add_product_to_favorite
 from webapp.services.service_payment_process import prepare_link_for_payment, is_order_paid
-from webapp.user.enums import EmailEventsForUser
 from webapp.services.service_send_email import send_email
 from webapp.services.service_sorting import process_sorting_product_types
-
 
 blueprint = Blueprint('marketplace', __name__)
 
@@ -33,7 +31,6 @@ def index():
 
     user_sorting_type = request.args.get('type_sorting')
 
-
     if user_sorting_type:
         try:
             products = process_sorting_product_types(user_sorting_type)
@@ -43,15 +40,9 @@ def index():
     else:
         products = Product.query.all()
 
-
-    return render_template(
-        'marketplace/index.html',
-        page_title=title,
-        products=products,
-        products_in_cart=products_in_cart,
-        is_user_add_product_to_favorite=is_user_add_product_to_favorite,
-        sorting_product_form=sorting_product_form
-    )
+    return render_template('marketplace/index.html', page_title=title, products=products,
+                           products_in_cart=products_in_cart, sorting_product_form=sorting_product_form,
+                           is_user_add_product_to_favorite=is_user_add_product_to_favorite)
 
 
 @blueprint.route('/search', methods=['POST'])
@@ -118,10 +109,8 @@ def add_to_cart():
     else:
         # Удаление товара из корзины
         if user_quantity <= 0:
-            delete_product_from_cart = ShoppingCart.query.filter(
-                ShoppingCart.user_id == current_user.id,
-                ShoppingCart.product_id == current_product_id
-            ).delete()
+            delete_product_from_cart = ShoppingCart.query.filter(ShoppingCart.user_id == current_user.id,
+                                                                 ShoppingCart.product_id == current_product_id).delete()
             db.session.commit()
             unique_products_in_cart = get_number_of_unique_products_in_cart()
             return jsonify({"is_available": available_status, "quantity": product_quantity,
@@ -186,10 +175,9 @@ def del_product_from_cart(product_id):
         del session['shopping_cart'][str(product_id)]
         session.modified = True
     else:
-        delete_product_from_cart = ShoppingCart.query.filter(
-            ShoppingCart.user_id == current_user.id,
-            ShoppingCart.product_id == product_id
-        ).delete()
+        delete_product_from_cart = ShoppingCart.query.filter(ShoppingCart.user_id == current_user.id,
+                                                             ShoppingCart.product_id == product_id,
+                                                             ShoppingCart.is_shopping_cart_paid == False).delete()
         db.session.commit()
     return redirect(url_for('marketplace.cart'))
 
@@ -207,7 +195,6 @@ def checkout_page():
 
 @blueprint.route('/checkout_process', methods=['POST'])
 def checkout_process():
-    title = 'Оформление заказа'
     form = CheckoutForm()
     if form.validate_on_submit():
         user = User.query.filter(User.email == form.email.data).first()
@@ -289,11 +276,11 @@ def check_payment():
                                                     ShoppingOrder.is_order_paid == False).all()
     else:
         order_number = session.get('order_number', None)
-        shopping_order = ShoppingOrder.query.filter(ShoppingOrder.order_id == order_number,
+        shopping_order = ShoppingOrder.query.filter(ShoppingOrder.order_number == order_number,
                                                     ShoppingOrder.is_order_paid == False).all()
 
     shopping_order = shopping_order[-1]
-    order_number = shopping_order.order_id
+    order_number = shopping_order.order_number
     payment_status = False
 
     if order_number:
@@ -314,6 +301,7 @@ def check_payment():
         paid_products_in_cart = ShoppingCart.query.filter(ShoppingCart.user_id == shopping_order.user.id,
                                                           ShoppingCart.is_shopping_cart_paid == False).all()
         for product in paid_products_in_cart:
+            product.order_id = shopping_order.id
             product.is_shopping_cart_paid = True
 
         db.session.commit()
