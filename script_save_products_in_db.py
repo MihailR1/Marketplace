@@ -28,9 +28,10 @@ def dataframe_from_excel(data) -> pd.DataFrame:
 
 
 def get_or_create_admin() -> User:
-    admin = User.query.filter(User.role == UserRole.admin.value).first()
+    admin = User.query.filter(User.role == UserRole.admin).first()
     if not admin:
-        admin = User(email=os.environ['ADMIN_EMAIL'], password=os.environ['ADMIN_PASSWORD'], role=UserRole.admin.value)
+        admin = User(email=os.environ['ADMIN_EMAIL'], role=UserRole.admin)
+        admin.set_password(os.environ['ADMIN_PASSWORD'])
         db.session.add(admin)
         db.session.commit()
     return admin
