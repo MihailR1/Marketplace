@@ -3,6 +3,7 @@ from wtforms import IntegerField, StringField, SubmitField, TextAreaField, Selec
 from wtforms.validators import DataRequired, NumberRange, Email
 
 from webapp.marketplace.models import Category
+from webapp.marketplace.enum_marketplace import ProductSortingTypes
 
 
 class AddNewProductForm(FlaskForm):
@@ -29,6 +30,15 @@ class SearchForm(FlaskForm):
                                render_kw={"class": "form-control mr-sm-2", "placeholder": "Найти товар",
                                           "autocomplete": "off"})
     submit = SubmitField('Поиск', render_kw={"class": "btn btn-outline-success my-2 my-sm-0"})
+
+
+class SortingProductForm(FlaskForm):
+    type_sorting = SelectField('Сортировка', choices=[], render_kw={"class": "form-control"})
+    submit = SubmitField('Выполнить', render_kw={"class": "btn btn-outline-success my-2 my-sm-0"})
+
+    def __init__(self, *args, **kwargs):
+        super(SortingProductForm, self).__init__(*args, **kwargs)
+        self.type_sorting.choices = [[type_sorting.value, type_sorting.readable_values()] for type_sorting in ProductSortingTypes]
 
 
 class CheckoutForm(FlaskForm):
