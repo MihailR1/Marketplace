@@ -209,7 +209,7 @@ def checkout_process():
         elif user and user != current_user:
             save_unauthenticated_user_data_in_session(form)
             flash(Markup(f'''Пользователь с таким email зарегистрирован в системе. 
-            Чтобы продолжить оформление заказа <a href="{url_for('user.login', next=request.full_path)}" class="alert-link">Войдите в аккаунт</a>. 
+            Чтобы продолжить оформление заказа <a href="{url_for('user.login', next=url_for('marketplace.cart'))}" class="alert-link">Войдите в аккаунт</a>. 
             Товары в корзине и Ваши данные  будут сохранены'''))
             return redirect(url_for('marketplace.checkout_page'))
 
@@ -230,7 +230,7 @@ def checkout_process():
             else:
                 save_unauthenticated_user_data_in_session(form)
                 flash(Markup(f'''Пользователь с таким телефоном зарегистрирован в системе. 
-                Чтобы продолжить оформление заказа <a href="{url_for('user.login', next=request.full_path)}" class="alert-link">Войдите в аккаунт</a>.
+                Чтобы продолжить оформление заказа <a href="{url_for('user.login', next=url_for('marketplace.cart'))}" class="alert-link">Войдите в аккаунт</a>.
                 Товары в корзине и Ваши данные  будут сохранены'''))
                 return redirect(url_for('marketplace.checkout_page'))
 

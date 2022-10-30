@@ -6,7 +6,7 @@ from webapp.user.forms import LoginForm, RegistrationForm
 from webapp.user.models import User
 from webapp.user.enums import EmailEventsForUser, UserRole
 from webapp.services.service_send_email import send_email
-from webapp.services.service_redirect_utils import get_redirect_target
+from webapp.services.service_redirect_utils import redirect_back
 from webapp.services.service_cart import save_products_into_db_from_session_cart
 
 blueprint = Blueprint('user', __name__, url_prefix='/users')
@@ -15,7 +15,8 @@ blueprint = Blueprint('user', __name__, url_prefix='/users')
 @blueprint.route('/login')
 def login():
     if current_user.is_authenticated:
-        return redirect(url_for('marketplace.index'))
+        return redirect_back()
+
     title = "Войти"
     login_form = LoginForm()
     return render_template('user/login.html', page_title=title, form=login_form)
@@ -47,7 +48,7 @@ def process_login():
 
             db.session.commit()
             flash("Вы успешно вошли на сайт")
-            return redirect(get_redirect_target())
+            return redirect_back()
 
         flash('Не правильные имя или пароль')
         return redirect(url_for('user.login'))
