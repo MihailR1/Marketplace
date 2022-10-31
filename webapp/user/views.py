@@ -1,4 +1,4 @@
-from flask import Blueprint, flash, render_template, redirect, url_for, jsonify, session, request
+from flask import Blueprint, flash, render_template, redirect, url_for, jsonify, session, request, Markup
 from flask_login import current_user, login_user, logout_user
 
 from webapp.db import db
@@ -108,33 +108,62 @@ def sms_auth():
 @blueprint.route('/process_auth_sms', methods=['POST'])
 def process_auth_sms():
     form_phone_number = SmsAuthForm()
-    status_sms = False
+
     if form_phone_number.validate_on_submit():
         phone_number = delete_symbols_from_phone_number(form_phone_number.phone_number.data)
         user = User.query.filter(User.phone_number == phone_number).first()
 
         if not user:
-            new_user = User(
+            user = User(
                 phone_number=phone_number,
-                role='user',
+                role=UserRole.user,
             )
-            new_user.set_password(generate_six_digits_code())
-            db.session.add(new_user)
-        db.session.commit()
-        code_for_sms = generate_six_digits_code()
-        status_sms = send_sms(SmsEventsForUser.send_auth_sms, user, generated_code=code_for_sms)
+            user.set_password(generate_six_digits_code())
+            db.session.add(user)
+            db.session.commit()
 
-        flash('СМС с кодом отправлено')
-        redirect(url_for('user.sms_confirmation'))
+        code_for_sms = generate_six_digits_code()
+        send_sms_with_code = send_sms(SmsEventsForUser.send_auth_sms, user, generated_code=code_for_sms)
+
+        if send_sms_with_code:
+            session['sms_code'] = code_for_sms
+            session['sms_send'] = True
+            session['user_phone'] = phone_number
+
+            flash('СМС с кодом отправлено')
+            return sms_confirmation()
+        else:
+            flash(Markup(f'''При отправке смс произошла ошибка, попробуйте еще раз или <a href="{url_for('user.login')}" 
+            class="alert-link">авторизуйтесь по email</a>'''))
+            return redirect(url_for('user.sms_auth'))
 
     else:
         for field, errors in form_phone_number.errors.items():
             for error in errors:
                 flash(f'Ошибка в поле {getattr(form_phone_number, field).label.text}: {error}')
-        return redirect(url_for('user.sms_auth'))
+    return redirect(url_for('user.sms_auth'))
+
+
+@blueprint.route('/sms_confirmation')
+def sms_confirmation():
+    title = "Регистрация и авторизация по коду из смс"
+
+    return render_template('user/sms_confirmation.html', page_title=title)
 
 
 @blueprint.route('/check_sms', methods=['POST'])
-def check_sms(code):
-    status_sms = False
-    return jsonify({"is_sms_sent": status_sms})
+def check_sms():
+    is_sms_sent = session.get('sms_send', False)
+    is_user_answer_right = False
+    generated_sms_code = session['sms_code']
+    user_phone = session['user_phone']
+    user_code = request.form['user_code']
+
+    if user_code == generated_sms_code:
+        is_user_answer_right = True
+        user = User.query.filter(User.phone_number == user_phone).first()
+        login_user(user)
+        save_products_into_db_from_session_cart(user)
+        flash("Вы успешно вошли на сайт")
+
+    return jsonify({"is_sms_sent": is_sms_sent, "is_user_answer_right": is_user_answer_right})

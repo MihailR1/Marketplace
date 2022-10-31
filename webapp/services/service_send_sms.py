@@ -2,32 +2,21 @@ from random import randint
 
 import requests
 from loguru import logger
-import mainsms
+from webapp.services import service_mainsms as mainsms
 
-from webapp.config import MAINSMS_API, MAINSMS_PROJECT_NAME
+from webapp.config import MAINSMS_API_KEY, MAINSMS_PROJECT_NAME
 from webapp.user.enums import SmsEventsForUser
 from webapp.user.models import User
 
 
 def generate_six_digits_code() -> str:
-    generated_code = ''.join([str(randint(0, 9)) for _ in range(5)])
+    generated_code = ''.join([str(randint(0, 9)) for _ in range(6)])
     return generated_code
 
 
 def delete_symbols_from_phone_number(phone_number) -> str:
     clear_phone_number = ''.join([digit for digit in phone_number if digit.isdigit()])
     return clear_phone_number
-
-
-def is_sms_delivered(messages_id) -> bool:
-    sms = mainsms.SMS(MAINSMS_PROJECT_NAME, MAINSMS_API)
-    message_id = messages_id[0]
-    sms_status = sms.statusSMS(message_id)
-    delivery_status = sms_status['messages'][message_id]
-    if delivery_status == 'delivered':
-        return True
-
-    return False
 
 
 def send_sms(event, user: User, **kwargs) -> bool:
@@ -56,9 +45,9 @@ def send_authentication_sms_code_to_user(user: User, **kwargs) -> mainsms.SMS | 
 
 
 def send_sms_using_mainsms(user_phone, sms_text) -> mainsms.SMS | None:
-    sms = mainsms.SMS(MAINSMS_PROJECT_NAME, MAINSMS_API)
+    sms = mainsms.SMS(MAINSMS_PROJECT_NAME, MAINSMS_API_KEY)
     try:
-        status_sent_sms = sms.sendSMS(user_phone, sms_text, test=1)
+        status_sent_sms = sms.sendSMS(user_phone, sms_text, test=0)
     except requests.RequestException as error:
         logger.exception(f'Ошибка во время отправки смс: {error}')
         status_sent_sms = None

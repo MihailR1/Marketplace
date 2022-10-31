@@ -4,8 +4,8 @@ from dotenv import load_dotenv
 
 load_dotenv()
 basedir = os.path.abspath(os.path.dirname(__file__))
-SQLALCHEMY_DATABASE_URI = 'sqlite:///' + os.path.join(basedir, '..', 'webapp.db')
-#SQLALCHEMY_DATABASE_URI = os.environ['DATABASE_URL']
+
+SQLALCHEMY_DATABASE_URI = os.environ['DATABASE_URL']
 SQLALCHEMY_TRACK_MODIFICATIONS = False
 SECRET_KEY = os.environ['SECRET_KEY']
 CACHE_TYPE = "SimpleCache"
@@ -21,4 +21,4 @@ SENDER_EMAIL = 'no-reply@super1site.ru'
 YOOMONEY_TOKEN = os.environ['YOOMONEY_TOKEN']
 YOOMONEY_WALLET = os.environ['YOOMONEY_WALLET']
 MAINSMS_PROJECT_NAME = os.environ['MAINSMS_PROJECT_NAME']
-MAINSMS_API = os.environ['MAINSMS_API']
+MAINSMS_API_KEY = os.environ['MAINSMS_API_KEY']

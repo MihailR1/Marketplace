@@ -1,36 +1,30 @@
-function check_sms_status() {
-    let response = fetch('/process_auth_sms', {
-        method: 'POST',
-        mode: 'cors',
-        cache: 'no-cache',
-        credentials: 'same-origin',
-        headers: {'Content-Type': 'application/json', 'charset': 'UTF-8'},
-        redirect: 'follow',
-        referrerPolicy: 'no-referrer'
-    }).then((response) => {
-        if (response.status == "200") {
-            console.log('Response 200')
-            return response.json()
-        }
-    }).then(response_info => {
-        if (response_info['is_sms_sent'] == true) {
-            console.log('okokok')
-            document.getElementById('payment_status_text').innerText = 'Платеж выполнен\n' +
-                'Перенаправляем на главную страницу сайта';
+$(document).ready(function () {
 
-            setTimeout(function () {
-                window.location.href = '/';
-            }, 2 * 1000);
+    $('#sms_confirm_code_by_user').on('keyup', function () {
+        var search = $(this).val();
+        if ((search != '') && (search.length == 6)) {
 
-        } else {
-            console.log('Not sent')
-            setInterval(function () {
-                check_payment();
-            }, 3000);
+            $.ajax({
+                type: "POST",
+                url: "/users/check_sms",
+                data: {'user_code': search},
+                success: function (server_answer) {
+
+                    if (server_answer['is_sms_sent'] == true) {
+
+                        if (server_answer['is_user_answer_right'] == false) {
+                            document.getElementById('text_for_sms_confirm').innerText = 'Код не верный, введите другие цифры';
+                        } else {
+                            document.getElementById('text_for_sms_confirm').innerText = 'Код верный, авторизуем';
+
+                            setTimeout(function () {
+                                window.location.href = '/';
+                            }, 1 * 1000);
+                        }
+                    }
+                }
+            });
         }
     });
-}
 
-document.querySelector('phone_auth_form').addEventListener('submit', (event) => {
-console.log('Отправка формы')
-})
+});

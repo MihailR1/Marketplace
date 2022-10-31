@@ -2,6 +2,7 @@ from flask import session
 from flask_login import current_user
 
 from webapp.marketplace.models import Product, ShoppingCart
+from webapp.services.service_send_sms import delete_symbols_from_phone_number
 from webapp.user.models import User
 from webapp import db
 
@@ -71,6 +72,6 @@ def save_products_into_db_from_session_cart(user: User):
 def save_unauthenticated_user_data_in_session(form):
     session['full_name'] = form.full_name.data
     session['shipping_adress'] = form.shipping_adress.data
-    session['phone_number'] = form.phone_number.data
+    session['phone_number'] = delete_symbols_from_phone_number(form.phone_number.data)
     session['email'] = form.email.data
     session.modified = True

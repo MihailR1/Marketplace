@@ -9,7 +9,7 @@ from webapp.user.enums import UserRole
 
 class User(db.Model, UserMixin):
     id = db.Column(db.Integer, primary_key=True)
-    email = db.Column(db.String(60), unique=True)
+    email = db.Column(db.String(60), unique=True, nullable=True)
     phone_number = db.Column(db.String(12), unique=True)
     full_name = db.Column(db.String(100))
     shipping_adress = db.Column(db.String(200))
