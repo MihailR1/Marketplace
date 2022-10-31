@@ -1,31 +1,178 @@
 <!doctype html>
 <html lang="ru">
-  <head>
-    <!-- Required meta tags -->
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <head>
+        <!-- Required meta tags -->
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
-    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+        <!-- CSS here -->
+        <link rel="stylesheet" href="{{ url_for('static', filename='css/preloader.css') }}">
+        <link rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap.css') }}">
+        <link rel="stylesheet" href="{{ url_for('static', filename='css/meanmenu.css') }}">
+        <link rel="stylesheet" href="{{ url_for('static', filename='css/animate.css') }}">
+        <link rel="stylesheet" href="{{ url_for('static', filename='css/owl-carousel.css') }}">
+        <link rel="stylesheet" href="{{ url_for('static', filename='css/swiper-bundle.css') }}">
+        <link rel="stylesheet" href="{{ url_for('static', filename='css/backtotop.css') }}">
+        <link rel="stylesheet" href="{{ url_for('static', filename='css/magnific-popup.css') }}">
+        <link rel="stylesheet" href="{{ url_for('static', filename='css/nice-select.css') }}">
+        <link rel="stylesheet" href="{{ url_for('static', filename='flaticon/flaticon.css') }}">
+        <link rel="stylesheet" href="{{ url_for('static', filename='css/font-awesome-pro.css') }}">
+        <link rel="stylesheet" href="{{ url_for('static', filename='css/default.css') }}">
+        <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.9.1/font/bootstrap-icons.css">
+        <title>{{ page_title }}</title>
+    </head>
+    <body>
+        <header class="header d-blue-bg">
+            {% include 'menu.html' %}
+        </header>
+        <div class="container">
+        {% include 'inform_messages.html' %}
+            <h3>{{ page_title }}</h3>
+            {% block content %}{% endblock %}
+        </div>
 
-    <!-- Bootstrap CSS -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.3.1/dist/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.9.1/font/bootstrap-icons.css">
-    <title>{{ page_title }}</title>
-  </head>
-  <body>
-    {% include 'menu.html' %}
-    <div class="container">
-    {% include 'inform_messages.html' %}
-        <h1>{{ page_title }}</h1>
-        {% block content %}{% endblock %}
-    </div>
-    <!-- Optional JavaScript -->
-    <!-- jQuery first, then Popper.js, then Bootstrap JS -->
-   <script src="https://code.jquery.com/jquery-3.6.1.js" integrity="sha256-3zlB5s2uwoUzrXK3BT7AX3FyvojsraNFxCc2vC/7pNI=" crossorigin="anonymous"></script>
-    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.14.7/dist/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
-  <!-- JavaScript Bundle with Popper -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-OERcA2EqjJCMA+/3y+gxIOqMEjwtxJY7qPCqsdltbNJuaOe923+mo//f6V8Qbsw3" crossorigin="anonymous"></script>
-  <script src="{{ url_for('static', filename='search_bar.js') }}"></script>
-  <script src="{{ url_for('static', filename='shopping_cart.js') }}"></script>
+        <!-- footer-start -->
+        <footer>
+            <div class="fotter-area d-dark-bg">
+                <div class="footer__top pt-80 pb-15">
+                    <div class="container">
+                        <div class="row">
+                            <div class="col-xl-5 col-lg-4 order-last-md">
+                                <div class="row">
+                                    <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 col-6">
+                                        <div class="footer__widget">
+                                            <div class="footer__widget-title">
+                                                <h4>Customer Care</h4>
+                                            </div>
+                                            <div class="footer__widget-content">
+                                                <div class="footer__link">
+                                                    <ul>
+                                                        <li><a href="faq.html">New Customers</a></li>
+                                                        <li><a href="faq.html">How to use Account</a></li>
+                                                        <li><a href="faq.html">Placing an Order</a></li>
+                                                        <li><a href="faq.html">Payment Methods</a></li>
+                                                        <li><a href="faq.html">Delivery &amp; Dispatch</a></li>
+                                                        <li><a href="faq.html">Problems with Order</a></li>
+                                                    </ul>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 col-6">
+                                        <div class="footer__widget">
+                                            <div class="footer__widget-title">
+                                                <h4>Customer Service</h4>
+                                            </div>
+                                            <div class="footer__widget-content">
+                                                <div class="footer__link">
+                                                    <ul>
+                                                        <li><a href="faq.html">Help Center</a></li>
+                                                        <li><a href="faq.html">Contact Us</a></li>
+                                                        <li><a href="faq.html">Report Abuse</a></li>
+                                                        <li><a href="faq.html">Submit a Dispute</a></li>
+                                                        <li><a href="faq.html">Policies &amp; Rules</a></li>
+                                                    </ul>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-xl-7 col-lg-8 order-first-md">
+                                <div class="footer__top-left">
+                                    <div class="row">
+                                        
+                                        <div class="col-xl-7 col-lg-6 col-md-6 col-sm-6">
+                                            <div class="row">
+                                                
+                                                <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6">
+                                                    <div class="footer__widget">
+                                                        <div class="footer__widget-title">
+                                                            <h4>My Account</h4>
+                                                        </div>
+                                                        <div class="footer__widget-content">
+                                                            <div class="footer__link">
+                                                                <ul>
+                                                                    <li><a href="faq.html">Product Support</a></li>
+                                                                    <li><a href="checkout.html">Checkout</a></li>
+                                                                    <li><a href="cart.html">Shopping Cart</a></li>
+                                                                    <li><a href="wishlist.html">Wishlist</a></li>
+                                                                    <li><a href="faq.html">Terms &amp; Conditions &amp;</a></li>
+                                                                    <li><a href="faq.html">Redeem Voucher</a></li>
+                                                                </ul>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6">
+                                        <div class="footer__widget">
+                                            <div class="footer__widget-title">
+                                                <h4>Quick Links</h4>
+                                            </div>
+                                            <div class="footer__widget-content">
+                                                <div class="footer__link">
+                                                    <ul>
+                                                        <li><a href="contact.html">Store Location</a></li>
+                                                        <li><a href="my-account.html">My account</a></li>
+                                                        <li><a href="contact.html">Order Tracking</a></li>
+                                                        <li><a href="faq.html">FAQs</a></li>
+                                                    </ul>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div></div>
+                                        </div><div class="col-xl-5 col-lg-6 col-md-6 col-sm-6">
+                                            <div class="footer__widget">
+                                                <div class="footer__widget-title mb-20">
+                                                    <h4>About The Store</h4>
+                                                </div>
+                                                <div class="footer__widget-content">
+                                                    <p class="footer-text mb-35">Our mission statement is to provide the absolute best customer experience available in the Electronic industry without exception.</p>
+                                                    <div class="footer__hotline d-flex align-items-center mb-10">
+                                                        <div class="icon mr-15">
+                                                            <i class="fal fa-headset"></i>
+                                                        </div>
+                                                        <div class="text">
+                                                            <h4>Got Question? Call us 24/7!</h4>
+                                                            <span><a href="tel:100-123-456-7890">(+100) 123 456 7890</a></span>
+                                                        </div>
+                                                    </div>
+                                                    <div class="footer__info">
+                                                        <ul>
+                                                            <li>
+                                                                <span>Add:  <a target="_blank" href="https://goo.gl/maps/c82DDZ8ALvL878Bv8">Walls Street 68, Mahattan, New York, USA</a></span>
+                                                            </li>
+                                                        </ul>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </footer>
+        <script src="{{ url_for('static', filename='js/vendor/jquery.js') }}"></script>
+        <script src="{{ url_for('static', filename='js/vendor/waypoints.js') }}"></script>
+        <script src="{{ url_for('static', filename='js/bootstrap-bundle.js') }}"></script>
+        <script src="{{ url_for('static', filename='js/meanmenu.js') }}"></script>
+        <script src="{{ url_for('static', filename='js/swiper-bundle.js') }}"></script>
+        <script src="{{ url_for('static', filename='js/tweenmax.js') }}"></script>
+        <script src="{{ url_for('static', filename='js/owl-carousel.js') }}"></script>
+        <script src="{{ url_for('static', filename='js/magnific-popup.js') }}"></script>
+        <script src="{{ url_for('static', filename='js/parallax.js') }}"></script>
+        <script src="{{ url_for('static', filename='js/backtotop.js') }}"></script>
+        <script src="{{ url_for('static', filename='js/nice-select.js') }}"></script>
+        <script src="{{ url_for('static', filename='js/countdown.min.js') }}"></script>
+        <script src="{{ url_for('static', filename='js/counterup.js') }}"></script>
+        <script src="{{ url_for('static', filename='js/wow.js') }}"></script>
+        <script src="{{ url_for('static', filename='js/isotope-pkgd.js') }}"></script>
+        <script src="{{ url_for('static', filename='js/imagesloaded-pkgd.js') }}"></script>
+        <script src="{{ url_for('static', filename='js/ajax-form.js') }}"></script>
+        <script src="{{ url_for('static', filename='js/main.js') }}"></script>
   </body>
 </html>

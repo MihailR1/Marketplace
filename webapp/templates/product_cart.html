@@ -1,23 +1,45 @@
 <div class="row row-cols-1 row-cols-md-3 g-4">
     {% for product in products %}
-        <div class="col" style="margin-bottom: 15px">
-            <div class="card h-100" style="width: 18rem">
-                <img src="{% if product.photos %}{{ product.photos[0].photos_path }}{% endif %}" class="card-img-top"
-                     alt="{{ product.name }}">
-                <div class="card-body">
+        <div class="product__item product__item-d">
+            <div class="product__thumb fix">
+                <div class="product-image w-img">
                     <a href="{{ url_for('marketplace.product_page', product_id=product.id) }}">
-                        <h5 class="card-title">{{ product.name }}</h5>
+                        <img src="{% if product.photos %}{{ product.photos[0].photos_path }}{% endif %}" class="card-img-top"
+                     alt="{{ product.name }}">
                     </a>
-                    <p class="card-text"> {{ product.description }}</p>
-                    <p class="card-text"> Цвет: {{ product.color }}</p>
-                    <p class="card-text"> Размеры: {{ product.size }}</p>
-                    <p class="card-text"> Цена: {{ product.price }} руб.</p>
-                    <a href="{{ url_for('marketplace.product_page', product_id=product.id) }}"
-                       class="btn btn-primary">Подробнее о товаре</a>
-                    {% include 'marketplace/favorite_area.html' %}
-                    {% include 'add_to_cart_section.html' %}
+                </div>
+                <div class="product-action">
+                    <a href="#" class="icon-box icon-box-1" data-bs-toggle="modal" data-bs-target="#productModalId">
+                        <i class="fal fa-eye"></i>
+                        <i class="fal fa-eye"></i>
+                    </a>
+                    <a href="#" class="icon-box icon-box-1">
+                        <i class="fal fa-heart"></i>
+                        <i class="fal fa-heart"></i>
+                    </a>
+                    <a href="#" class="icon-box icon-box-1">
+                        <i class="fal fa-layer-group"></i>
+                        <i class="fal fa-layer-group"></i>
+                    </a>
                 </div>
             </div>
+            <div class="product__content-3">
+                <h6><a href="{{ url_for('marketplace.product_page', product_id=product.id) }}">{{ product.name }}</a></h6>
+                <div class="rating mb-5">
+                    <ul>
+                        <li><a href="#"><i class="fal fa-star"></i></a></li>
+                        <li><a href="#"><i class="fal fa-star"></i></a></li>
+                        <li><a href="#"><i class="fal fa-star"></i></a></li>
+                        <li><a href="#"><i class="fal fa-star"></i></a></li>
+                        <li><a href="#"><i class="fal fa-star"></i></a></li>
+                    </ul>
+                    <span>(01 review)</span>
+                </div>
+                <div class="price mb-10">
+                    <span>{{ product.price }} руб.</span>
+                </div>
+            </div>
+            {% include 'add_to_cart_section.html' %}
         </div>
     {% endfor %}
 </div>

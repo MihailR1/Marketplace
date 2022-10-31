@@ -1,0 +1,58 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <div class="account-area mt-70 mb-70">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-6">
+                    <div class="basic-login mb-50">
+                        <h5>Войти</h5>
+                        <form action="{{ url_for('user.process_login') }}" method="POST">
+                                {{ form_login.hidden_tag() }}
+                            <div class="form-group">
+                                {{ form_login.email.label }}
+                                {{ form_login.email() }}
+                            </div>
+                            <div class="form-group">
+                                {{ form_login.password.label }}<br>
+                                {{ form_login.password() }}
+                            </div>
+                            <div class="login-action mb-10 fix">
+                                <div class="log-rem f-left">
+                                    {{ form_login.remember_me() }}
+                                    {{ form_login.remember_me.label(class_='form-check-label') }}
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                {{ form_login.submit() }}
+                            </div>
+                        </form>
+                    </div>
+                </div>
+                <div class="col-lg-6">
+                    <div class="basic-login">
+                        <h5>Регистрация</h5>
+                        <form action="{{ url_for('user.process_reg') }}" method="POST">
+                            {{ form_register.hidden_tag() }}
+                            <div class="form-group">
+                                {{ form_register.email.label }}
+                                {{ form_register.email() }}
+                            </div>
+                            <div class="form-group">
+                                {{ form_register.password.label }}<br>
+                                {{ form_register.password() }}
+                            </div>
+                            <div class="form-group">
+                                {{ form_register.password2.label }}<br>
+                                {{ form_register.password2() }}
+                            </div>
+                            <div class="form-group">
+                                {{ form_register.submit() }}
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

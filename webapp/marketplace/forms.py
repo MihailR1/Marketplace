@@ -18,7 +18,7 @@ class AddNewProductForm(FlaskForm):
     gender = SelectField('Пол', choices=['мужской', 'женский', 'унисекс'], render_kw={"class": "form-control"})
     size = StringField('Размер', render_kw={"class": "form-control"})
     photos = MultipleFileField('Добавить фото', validators=[DataRequired()])
-    submit = SubmitField('Отправить!', render_kw={"class": "btn btn-primary"})
+    submit = SubmitField('Отправить!', render_kw={"class": "cart-btn"})
 
     def __init__(self, *args, **kwargs):
         super(AddNewProductForm, self).__init__(*args, **kwargs)
@@ -27,14 +27,14 @@ class AddNewProductForm(FlaskForm):
 
 class SearchForm(FlaskForm):
     search_input = StringField('Найти товар', validators=[DataRequired()],
-                               render_kw={"class": "form-control mr-sm-2", "placeholder": "Найти товар",
+                               render_kw={"class": "search-input", "placeholder": "Найти товар",
                                           "autocomplete": "off"})
-    submit = SubmitField('Поиск', render_kw={"class": "btn btn-outline-success my-2 my-sm-0"})
+    submit = SubmitField('Поиск', render_kw={"class": "button-search"})
 
 
 class SortingProductForm(FlaskForm):
-    type_sorting = SelectField('Сортировка', choices=[], render_kw={"class": "form-control"})
-    submit = SubmitField('Выполнить', render_kw={"class": "btn btn-outline-success my-2 my-sm-0"})
+    type_sorting = SelectField('Сортировка', choices=[])
+    submit = SubmitField('Выполнить', render_kw={"class": "cart-btn cart-btn-sort"})
 
     def __init__(self, *args, **kwargs):
         super(SortingProductForm, self).__init__(*args, **kwargs)

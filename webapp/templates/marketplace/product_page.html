@@ -1,24 +1,113 @@
 {% extends "base.html" %}
 
 {% block content %}
-    <div class="card mb-3" style="max-width: 540px;">
-        <div class="row 12">
-            <div class="col-md-4">
-                <img src="{% if product.photos %}{{ product.photos[0].photos_path }}{% endif %}"
-                     class="img-fluid rounded-start" alt="{{ product.name }}">
-            </div>
-            <div class="col-md-8">
-                <div class="card-body">
-                    <h5 class="card-title">{{ product.name }}</h5>
-                    <p class="card-text"> {{ product.description }}</p>
-                    <p class="card-text"> Цвет: {{ product.color }}</p>
-                    <p class="card-text"> Размеры: {{ product.size }}</p>
-                    <p class="card-text"> Цена: {{ product.price }} руб.</p>
-                    <p class="card-text"><small class="text-muted">Категория: {{ product.category.name }}</small></p>
-                    {% include 'add_to_cart_section.html' %}
-                    {% include 'marketplace/favorite_area.html' %}
+    <div class="product-details">
+        <div class="container">
+            <div class="row">
+                <div class="col-xl-6">
+                    <div class="product__details-nav d-sm-flex align-items-start">
+                        <ul class="nav nav-tabs flex-sm-column justify-content-between" id="productThumbTab" role="tablist">
+                            <li class="nav-item" role="presentation">
+                              <button class="nav-link active" id="thumbOne-tab" data-bs-toggle="tab" data-bs-target="#thumbOne" type="button" role="tab" aria-controls="thumbOne" aria-selected="true">
+                                <img src="{% if product.photos %}{{ product.photos[0].photos_path }}{% endif %}"
+                                class="img-fluid rounded-start" alt="{{ product.name }}">
+                              </button>
+                            </li>
+                        </ul>
+                        <div class="product__details-thumb">
+                            <div class="tab-content" id="productThumbContent">
+                                <div class="tab-pane fade show active" id="thumbOne" role="tabpanel" aria-labelledby="thumbOne-tab">
+                                    <div class="product__details-nav-thumb w-img">
+                                        <img src="{% if product.photos %}{{ product.photos[0].photos_path }}{% endif %}"
+                                        class="img-fluid rounded-start" alt="{{ product.name }}">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-xl-6">
+                    <div class="product__details-content">
+                        <h6>{{ product.name }}</h6>
+                        <div class="pd-rating mb-10">
+                            <ul class="rating">
+                                <li><a href="#"><i class="fal fa-star"></i></a></li>
+                                <li><a href="#"><i class="fal fa-star"></i></a></li>
+                                <li><a href="#"><i class="fal fa-star"></i></a></li>
+                                <li><a href="#"><i class="fal fa-star"></i></a></li>
+                                <li><a href="#"><i class="fal fa-star"></i></a></li>
+                            </ul>
+                            <span>(01 review)</span>
+                            <span><a href="#">Add your review</a></span>
+                        </div>
+                        <div class="price mb-10">
+                            <span>{{ product.price }} руб.</span>
+                        </div>
+                        <div class="cart-option mb-15">
+                            <div class="product-quantity mr-20">
+                                <div class="cart-plus-minus p-relative"><input type="text" value="1"><div class="dec qtybutton">-</div><div class="inc qtybutton">+</div></div>
+                            </div>
+                            {% include 'add_to_cart_section.html' %}
+                        </div>
+                        <div class="details-meta">
+                            <div class="d-meta-left">
+                                <div class="dm-item mr-20">
+                                    {% include 'marketplace/favorite_area.html' %}
+                                </div>
+                            </div>
+                            <div class="d-meta-left">
+                                <div class="dm-item">
+                                    <a href="#"><i class="fal fa-share-alt"></i>Share</a>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="product-tag-area mt-15">
+                            <div class="product_info">
+                                <span class="posted_in">
+                                    <span class="title">Категория:</span>
+                                    <span class="sku">{{ product.category.name }}</span>
+                                </span>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
+    <!-- product-details-des-start -->
+    <div class="product-details-des mt-40 mb-60">
+        <div class="container">
+            <div class="row">
+                <div class="col-xl-12">
+                    <div class="product__details-des-tab">
+                        <ul class="nav nav-tabs" id="productDesTab" role="tablist">
+                            <li class="nav-item" role="presentation">
+                              <button class="nav-link active" id="des-tab" data-bs-toggle="tab" data-bs-target="#des" type="button" role="tab" aria-controls="des" aria-selected="true">Description </button>
+                            </li>
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link" id="aditional-tab" data-bs-toggle="tab" data-bs-target="#aditional" type="button" role="tab" aria-controls="aditional" aria-selected="false">Additional information</button>
+                              </li>
+                            <li class="nav-item" role="presentation">
+                              <button class="nav-link" id="review-tab" data-bs-toggle="tab" data-bs-target="#review" type="button" role="tab" aria-controls="review" aria-selected="false">Reviews</button>
+                            </li>
+                          </ul>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-content" id="prodductDesTaContent">
+                <div class="tab-pane fade active show" id="des" role="tabpanel" aria-labelledby="des-tab">
+                    <div class="product__details-des-wrapper">
+                        <p class="des-text mb-35">{{ product.description }}</p>
+                    </div>
+                </div>
+                <div class="tab-pane fade" id="aditional" role="tabpanel" aria-labelledby="aditional-tab">
+                    <div class="product__desc-info"></div>
+                </div>
+                <div class="tab-pane fade" id="review" role="tabpanel" aria-labelledby="review-tab">
+                    <div class="product__details-review"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- product-details-des-end -->
 {% endblock %}
