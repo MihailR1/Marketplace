@@ -12,6 +12,7 @@ from sqlalchemy.exc import SQLAlchemyError
 from webapp import create_app
 from webapp.db import db
 from webapp.config import UPLOAD_PATH
+from webapp.user.enums import UserRole
 from webapp.user.models import User
 from webapp.marketplace.models import Product, Category, Photo
 
@@ -28,9 +29,10 @@ def dataframe_from_excel(data) -> pd.DataFrame:
 
 
 def get_or_create_admin() -> User:
-    admin = User.query.filter(User.role == 'Admin').first()
+    admin = User.query.filter(User.role == UserRole.admin).first()
     if not admin:
-        admin = User(email=os.environ['ADMIN_EMAIL'], password=os.environ['ADMIN_PASSWORD'], role='Admin')
+        admin = User(email=os.environ['ADMIN_EMAIL'], role=UserRole.admin)
+        admin.set_password(os.environ['ADMIN_PASSWORD'])
         db.session.add(admin)
         db.session.commit()
     return admin

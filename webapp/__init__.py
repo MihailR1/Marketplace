@@ -11,7 +11,7 @@ from webapp.marketplace.views import blueprint as marketplace_blueprint
 from webapp.marketplace.forms import SearchForm
 from webapp.user.models import User
 from webapp.user.views import blueprint as user_blueprint
-from webapp.services.service_cart import get_unique_products_in_cart
+from webapp.services.service_cart import get_number_of_unique_products_in_cart
 
 
 def create_app():
@@ -37,7 +37,7 @@ def create_app():
     def utility_processor():
         form_search = SearchForm()
         form_search.search_input.data = ''
-        unique_products_in_cart = get_unique_products_in_cart()
+        unique_products_in_cart = get_number_of_unique_products_in_cart()
 
         @cache.cached(timeout=18000, key_prefix='dropdown_categories')
         def dropdown_categories():

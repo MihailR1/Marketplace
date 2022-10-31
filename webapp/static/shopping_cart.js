@@ -48,7 +48,13 @@ function query_to_db(product_id, quantity) {
         if (response_info['is_available'] == false) {
             document.getElementById('productOut_' + product_id).style.display = 'block';
             document.getElementById('number-text_' + product_id).value = response_info['quantity'];
+        } else {
+            document.getElementById('productOut_' + product_id).style.display = 'none';
         }
-        document.getElementById('cart_icon').textContent = 'Корзина (' + response_info['unique_products'] + ')'
+        if (response_info['unique_products'] > 0) {
+            document.getElementById('cart_icon').textContent = 'Корзина (' + response_info['unique_products'] + ')'
+        } else {
+            document.getElementById('cart_icon').textContent = 'Корзина'
+        }
     });
 }

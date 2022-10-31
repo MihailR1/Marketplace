@@ -25,12 +25,12 @@
         </ul>
 
         <ul class="navbar-nav">
-        <a class="nav-link" id="cart_icon" href="{{ url_for('marketplace.cart') }}">
-            Корзина
-            {% if number_products_in_cart %}
-                ({{ number_products_in_cart }})
-            {% endif %}
-        </a>
+            <a class="nav-link" id="cart_icon" href="{{ url_for('marketplace.cart') }}">
+                Корзина
+                {% if number_products_in_cart %}
+                    ({{ number_products_in_cart }})
+                {% endif %}
+            </a>
             {% if current_user.is_authenticated %}
                 <li class="nav-item">
                     <span class="nav-link">Привет, {{ current_user.email }}</span>
