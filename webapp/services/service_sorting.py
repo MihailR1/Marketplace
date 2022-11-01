@@ -1,4 +1,4 @@
-from webapp.marketplace.enum_marketplace import ProductSortingTypes
+from webapp.marketplace.enums import ProductSortingTypes
 from webapp.marketplace.models import Product
 
 

@@ -1,3 +1,5 @@
+from datetime import datetime
+
 from sqlalchemy.orm import relationship
 from sqlalchemy_mptt.mixins import BaseNestedSets
 
@@ -53,12 +55,30 @@ class UserFavoriteProduct(db.Model):
         return f'<User_favorite_product {self.user_id}, {self.product_id}>'
 
 
+class ShoppingOrder(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    is_order_paid = db.Column(db.Boolean, default=False)
+    user_id = db.Column(db.Integer, db.ForeignKey(User.id, ondelete='CASCADE'))
+    user = relationship('User', backref='orders')
+    order_number = db.Column(db.String(90))
+    amount = db.Column(db.Integer)
+    paid_datetime = db.Column(db.DateTime, default=None)
+
+    def __repr__(self):
+        return f'<ShoppingOrder {self.id}, order id: {self.order_number}, user: {self.user_id}>'
+
+
 class ShoppingCart(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    user_id = db.Column(db.Integer, db.ForeignKey(User.id))
-    product_id = db.Column(db.Integer, db.ForeignKey(Product.id))
-    product_info = relationship('Product', backref='shopping_cart')
+    user_id = db.Column(db.Integer, db.ForeignKey(User.id, ondelete='CASCADE'))
+    product_id = db.Column(db.Integer, db.ForeignKey(Product.id, ondelete='CASCADE'))
+    order_id = db.Column(db.Integer, db.ForeignKey(ShoppingOrder.id, ondelete='CASCADE'))
+    user = relationship('User', backref='cart')
+    product_info = relationship('Product', backref='cart')
+    order = relationship('ShoppingOrder', backref='cart')
     quantity = db.Column(db.Integer)
+    is_shopping_cart_paid = db.Column(db.Boolean, default=False)
+    creation_datetime = db.Column(db.DateTime, default=datetime.now())
 
     def __repr__(self):
         return f'<ShoppingCart id {self.id}, user_id: {self.user_id}, products: {self.product_info}>'

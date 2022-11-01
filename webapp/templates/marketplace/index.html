@@ -1,109 +1,61 @@
 {% extends "base.html" %}
 
 {% block content %}
-    <!-- features__area-start -->
-    <section class="features__area pt-20">
-        <div class="container">
-            <div class="row row-cols-xxl-4 row-cols-xl-4 row-cols-lg-4 row-cols-md-2 row-cols-sm-2 row-cols-1 gx-0">
-                <div class="col">
-                    <div class="features__item d-flex white-bg">
-                        <div class="features__icon mr-20">
-                            <i class="fal fa-truck"></i>
-                        </div>
-                        <div class="features__content">
-                            <h6>FREE DELIVERY</h6>
-                            <p>For all orders over $120</p>
-                        </div>
-                    </div>
-                </div>
-                <div class="col">
-                    <div class="features__item d-flex white-bg">
-                        <div class="features__icon mr-20">
-                            <i class="fal fa-money-check"></i>
-                        </div>
-                        <div class="features__content">
-                            <h6>SAFE PAYMENT</h6>
-                            <p>100% secure payment</p>
-                        </div>
-                    </div>
-                </div>
-                <div class="col">
-                    <div class="features__item d-flex white-bg">
-                        <div class="features__icon mr-20">
-                            <i class="fal fa-comments-alt"></i>
-                        </div>
-                        <div class="features__content">
-                            <h6>24/7 HELP CENTER</h6>
-                            <p>Delicated 24/7 support</p>
+    <div class="col-xl-9 col-lg-8">
+        <div class="product-lists-top">
+            <div class="product__filter-wrap">
+                <div class="row align-items-center">
+                    <div class="col-xxl-6 col-xl-6 col-lg-6 col-md-6">
+                        <div class="product__filter d-sm-flex align-items-center">
+                            <div class="product__col">
+                                <ul class="nav nav-tabs" id="myTab" role="tablist">
+                                    <li class="nav-item" role="presentation">
+                                    <button class="nav-link active" id="FourCol-tab" data-bs-toggle="tab" data-bs-target="#FourCol" type="button" role="tab" aria-controls="FourCol" aria-selected="true">
+                                        <i class="fal fa-th"></i>
+                                    </button>
+                                    </li>
+                                    <li class="nav-item" role="presentation">
+                                    <button class="nav-link" id="FiveCol-tab" data-bs-toggle="tab" data-bs-target="#FiveCol" type="button" role="tab" aria-controls="FiveCol" aria-selected="false">
+                                        <i class="fal fa-list"></i>
+                                    </button>
+                                    </li>
+                                </ul>
+                            </div>
+                            <div class="product__result pl-60">
+                                <p>Showing 1-20 of 29 relults</p>
+                            </div>
                         </div>
                     </div>
-                </div>
-                <div class="col">
-                    <div class="features__item features__item-last d-flex white-bg">
-                        <div class="features__icon mr-20">
-                            <i class="fad fa-user-headset"></i>
-                        </div>
-                        <div class="features__content">
-                            <h6>FRIENDLY SERVICES</h6>
-                            <p>30 day satisfaction guarantee</p>
+                    <div class="col-xxl-6 col-xl-6 col-lg-6 col-md-6">
+                        <div class="product__filter-right d-flex align-items-center justify-content-md-end">
+                            <div class="product__sorting product__show-no">
+                                <select>
+                                    <option>10</option>
+                                    <option>20</option>
+                                    <option>30</option>
+                                    <option>40</option>
+                                </select>
+                            </div>
+                            <div class="product__sorting product__show-position ml-20">
+                                <select>
+                                    <option>Latest</option>
+                                    <option>New</option>
+                                    <option>Up comeing</option>
+                                </select>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
-    </section>
-    <!-- features__area-end -->
-
-    
-    <div class="product-lists-top">
-        <div class="product__filter-wrap">
-            <div class="row align-items-center">
-                <div class="col-xxl-1 col-xl-1 col-lg-1 col-md-1">
-                    <div class="product__filter d-sm-flex align-items-center">
-                        <div class="product__col">
-                            <ul class="nav nav-tabs" id="myTab" role="tablist">
-                                <li class="nav-item" role="presentation">
-                                  <button class="nav-link active" id="FourCol-tab" data-bs-toggle="tab" data-bs-target="#FourCol" type="button" role="tab" aria-controls="FourCol" aria-selected="true">
-                                    <i class="fal fa-th"></i>
-                                  </button>
-                                </li>
-                                <li class="nav-item" role="presentation">
-                                  <button class="nav-link" id="FiveCol-tab" data-bs-toggle="tab" data-bs-target="#FiveCol" type="button" role="tab" aria-controls="FiveCol" aria-selected="false">
-                                    <i class="fal fa-list"></i>
-                                  </button>
-                                </li>
-                              </ul>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-xxl-4 col-xl-4 col-lg-4 col-md-4">
-                    <div class="product__filter-right d-flex align-items-center justify-content-md-end">
-                        <div class="product__sorting nice-select-sort product__show-no">
-                            {% include 'marketplace/product_sort.html' %}
-                        </div>
-                    </div>
-                </div>
-                <div class="col-xxl-4 col-xl-4 col-lg-4 col-md-4">
-                    <div class="product__filter-right d-flex align-items-center justify-content-md-end">
-                        <div class="product__sorting product__show-no">
-                            <select>
-                                <option>10</option>
-                                <option>20</option>
-                                <option>30</option>
-                                <option>40</option>
-                            </select>
-                        </div>
-                        <div class="product__sorting product__show-position ml-20">
-                            <select>
-                                <option>Latest</option>
-                                <option>New</option>
-                                <option>Up comeing</option>
-                            </select>
-                        </div>
+        <div class="tab-content" id="productGridTabContent">
+            <div class="tab-pane fade  show active" id="FourCol" role="tabpanel" aria-labelledby="FourCol-tab">
+                <div class="tp-wrapper">
+                    <div class="row g-0">
+                        {% include "product_cart.html" %}
                     </div>
                 </div>
             </div>
         </div>
     </div>
-    {% include 'product_cart.html' %}
 {% endblock %}
