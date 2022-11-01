@@ -26,7 +26,7 @@
                                         <i class="flaticon-user"></i>
                                         <span class="text">
                                         <span class="sub">Профиль</span>
-                                        Привет, <br>  {{ current_user.email }}</span>
+                                        Привет, <br> {{ current_user.email }}</span>
                                     </a>
                                 {% else %}
                                     <a class="icon-link" href="{{ url_for('user.login_or_register_user') }}">
@@ -39,18 +39,18 @@
                             </div>
                             <div class="block-wishlist action">
                                 <a class="icon-link" href="{{ url_for('marketplace.favorite_page') }}">
-                                <i class="flaticon-heart"></i>
-                                <span class="count">{{ count_favorite_products_current_user() }}</span>
-                                <span class="text">
+                                    <i class="flaticon-heart"></i>
+                                    <span class="count">{{ count_favorite_products_current_user() }}</span>
+                                    <span class="text">
                                 <span class="sub">Избранное</span>
                                 Твой список желаний</span>
                                 </a>
                             </div>
                             <div class="block-cart action">
                                 <a class="icon-link" href="{{ url_for('marketplace.cart') }}">
-                                <i class="flaticon-shopping-bag"></i>
-                                <span class="count">1</span>
-                                <span class="text">
+                                    <i class="flaticon-shopping-bag"></i>
+                                    <span class="count">1</span>
+                                    <span class="text">
                                 <span class="sub">Your Cart:</span>
                                 $00.00 </span>
                                 </a>
@@ -58,36 +58,37 @@
                                     <div class="cart__mini">
                                         <ul>
                                             <li>
-                                              <div class="cart__title">
-                                                <h4>Your Cart</h4>
-                                                <span>(1 Item in Cart)</span>
-                                              </div>
+                                                <div class="cart__title">
+                                                    <h4>Your Cart</h4>
+                                                    <span>(1 Item in Cart)</span>
+                                                </div>
                                             </li>
                                             <li>
-                                              <div class="cart__item d-flex justify-content-between align-items-center">
-                                                <div class="cart__inner d-flex">
-                                                  <div class="cart__thumb">
-                                                    <a href="product-details.html">
-                                                      <img src="img/cart/20.jpg" alt="">
-                                                    </a>
-                                                  </div>
-                                                  <div class="cart__details">
-                                                    <h6><a href="product-details.html"> Samsung C49J89: £875, Debenhams Plus  </a></h6>
-                                                    <div class="cart__price">
-                                                      <span>$255.00</span>
+                                                <div class="cart__item d-flex justify-content-between align-items-center">
+                                                    <div class="cart__inner d-flex">
+                                                        <div class="cart__thumb">
+                                                            <a href="product-details.html">
+                                                                <img src="img/cart/20.jpg" alt="">
+                                                            </a>
+                                                        </div>
+                                                        <div class="cart__details">
+                                                            <h6><a href="product-details.html"> Samsung C49J89: £875,
+                                                                Debenhams Plus </a></h6>
+                                                            <div class="cart__price">
+                                                                <span>$255.00</span>
+                                                            </div>
+                                                        </div>
                                                     </div>
-                                                  </div>
+                                                    <div class="cart__del">
+                                                        <a href="#"><i class="fal fa-times"></i></a>
+                                                    </div>
                                                 </div>
-                                                <div class="cart__del">
-                                                    <a href="#"><i class="fal fa-times"></i></a>
-                                                </div>
-                                              </div>
                                             </li>
                                             <li>
-                                              <div class="cart__sub d-flex justify-content-between align-items-center">
-                                                <h6>Subtotal</h6>
-                                                <span class="cart__sub-total">$255.00</span>
-                                              </div>
+                                                <div class="cart__sub d-flex justify-content-between align-items-center">
+                                                    <h6>Subtotal</h6>
+                                                    <span class="cart__sub-total">$255.00</span>
+                                                </div>
                                             </li>
                                             <li>
                                                 <a href="cart.html" class="wc-cart mb-10">View cart</a>
@@ -106,44 +107,41 @@
     <div class="header__bottom">
         <div class="container">
             <div class="row g-0 align-items-center">
-                <div class="col-lg-3">                        
+                <div class="col-lg-3">
                     <div class="cat__menu-wrapper side-border d-none d-lg-block">
                         <div class="cat-toggle">
-                            <button type="button" class="cat-toggle-btn cat-toggle-btn-1"><i class="fal fa-bars"></i> Shop by department</button>
+                            <button type="button" class="cat-toggle-btn cat-toggle-btn-1"><i class="fal fa-bars"></i>Каталог
+                            </button>
                             <div class="cat__menu">
-                                <nav id="mobile-menu" style="display: block;">
-                                    <ul>
-                                        <li>
-                                            
-                                        </li>
-                                    </ul>
-                                </nav>
+
+                                {% include 'category_menu.html' %}
+
                             </div>
                         </div>
                     </div>
                 </div>
                 <div class="col-lg-6 col-md-6 col-3">
-                  <div class="header__bottom-left d-flex d-xl-block align-items-center">
-                    <div class="side-menu d-lg-none mr-20">
-                      <button type="button" class="side-menu-btn offcanvas-toggle-btn"><i class="fas fa-bars"></i></button>
+                    <div class="header__bottom-left d-flex d-xl-block align-items-center">
+                        <div class="side-menu d-lg-none mr-20">
+                            <button type="button" class="side-menu-btn offcanvas-toggle-btn"><i class="fas fa-bars"></i>
+                            </button>
+                        </div>
+                        <div class="main-menu d-none d-lg-block">
+                            <nav>
+                                <ul>
+                                    <li>
+                                        <a href="/">Home</a>
+                                    </li>
+                                    <li>
+                                        <a href="#">О нас</a>
+                                    </li>
+                                </ul>
+                            </nav>
+                        </div>
                     </div>
-                    <div class="main-menu d-none d-lg-block">
-                        <nav>
-                            <ul>
-                                <li>
-                                    <a href="/">Home</a>
-                                </li>
-                                <li>
-                                    <a href="#">О нас</a>
-                                </li>
-                            </ul>
-                        </nav>
-                    </div>
-                  </div>
                 </div>
             </div>
         </div>
     </div>
 </header>
-{% include 'category_menu.html' %}
 <!-- header-end -->

@@ -1,46 +1,43 @@
-<div class="dropdown">
-    <button class="btn btn-primary dropdown-toggle" type="button" id="dropdownMenuButton"
-            data-mdb-toggle="dropdown" data-bs-toggle="dropdown" aria-expanded="false">Каталог
-    </button>
-    <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-        {% for category in dropdown_categories() %}
+<nav id="mobile-menu" style="display: block;">
+    {% for category in dropdown_categories() %}
+        <ul>
             <li>
-                <a class="dropdown-item"
-                   href="{{ url_for('marketplace.category_page', category_id=category['node'].id) }}">
-                    {{ category['node'].name }} {% if category['children'] %}&raquo; {% endif %}
-                </a>
+                <a href="{{ url_for('marketplace.category_page', category_id=category['node'].id) }}">{{ category['node'].name }}
+                    {% if category['children'] %}&raquo; {% endif %} <i class="far fa-angle-down"></i></a>
                 {% if category['children'] %}
-                    <ul class="dropdown-menu dropdown-submenu">
+                    <ul class="submenu">
                         {% for sub1 in category['children'] %}
                             <li>
-                                <a class="dropdown-item"
-                                   href="{{ url_for('marketplace.category_page', category_id=sub1['node'].id) }}">{{ sub1['node'].name }}
+                                <a href="{{ url_for('marketplace.category_page', category_id=sub1['node'].id) }}">{{ sub1['node'].name }}
                                     {% if sub1['children'] %}&raquo; {% endif %} </a>
                                 {% if sub1['children'] %}
-                                    <ul class="dropdown-menu dropdown-submenu">
+                                    <ul class="submenu">
                                         {% for sub2 in sub1['children'] %}
                                             <li>
-                                                <a class="dropdown-item"
-                                                   href="{{ url_for('marketplace.category_page', category_id=sub2['node'].id) }}">{{ sub2['node'].name }}</a>
+                                                <a href="{{ url_for('marketplace.category_page', category_id=sub2['node'].id) }}">{{ sub2['node'].name }}</a>
+
                                                 {% if sub2['children'] %}
-                                                    <ul class="">
+                                                    <ul>
                                                         {% for sub3 in sub2['children'] %}
                                                             <li>
-                                                                <a class="dropdown-item"
-                                                                   href="{{ url_for('marketplace.category_page', category_id=sub3['node'].id) }}">{{ sub3['node'].name }}</a>
+                                                                <a style="color: gray; margin: 5px"
+                                                                   href="{{ url_for('marketplace.category_page', category_id=sub3['node'].id) }}">
+                                                                    - {{ sub3['node'].name }}</a>
                                                             </li>
                                                         {% endfor %}
                                                     </ul>
                                                 {% endif %}
+
                                             </li>
                                         {% endfor %}
                                     </ul>
                                 {% endif %}
                             </li>
+
                         {% endfor %}
                     </ul>
                 {% endif %}
             </li>
-        {% endfor %}
-    </ul>
-</div>
+        </ul>
+    {% endfor %}
+</nav>
