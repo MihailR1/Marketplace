@@ -1,44 +1,77 @@
 {% extends "base.html" %}
 
 {% block content %}
-    {% if products_in_cart %}
-        <div class="row">
-            <div class="col-sm-6">
-                <h5 class="card-title">В корзине {{ count_all_products }} шт. товара, на
-                    сумму {{ count_total_money }} рублей.</h5>
-            </div>
-            {% if products_in_cart %}
-                <div class="row-sm-6">
-                    <a href="{{ url_for('marketplace.checkout_page') }}">Оформить заказ</a>
-                </div>
-            {% endif %}
+     <!-- cart-area-start -->
+     <section class="cart-area pt-120 pb-120">
+        <div class="container">
+           <div class="row">
+              <div class="col-12">
+                {% if products_in_cart %}
+                       <div class="table-content table-responsive">
+                          <table class="table">
+                                <thead>
+                                   <tr>
+                                      <th class="product-thumbnail">Изображение</th>
+                                      <th class="cart-product-name">Продукт</th>
+                                      <th class="product-price">Цена за штуку</th>
+                                      <th class="product-quantity">Колличество</th>
+                                      <th class="product-subtotal">Общая сумма</th>
+                                      <th class="product-remove">Удалить товар</th>
+                                   </tr>
+                                </thead>
+                                <tbody>
+                                    {% for product, quantity in products_in_cart.items() %}
+                                        <tr>
+                                            <td class="product-thumbnail"><a href="{{ url_for('marketplace.product_page', product_id=product.id) }}"><img src="{% if product.photos %}{{ product.photos[0].photos_path }}{% endif %}" class="card-img-top"
+                                                alt="{{ product.name }}"></a></td>
+                                            <td class="product-name"><a href="{{ url_for('marketplace.product_page', product_id=product.id) }}">{{ product.name }}</a></td>
+                                            <td class="product-price"><span class="amount">{{ product.price }} руб.</span></td>
+                                            <td class="product-quantity"><span class="amount">{{ quantity }} шт.</span></td>
+                                            <td class="product-subtotal"><span class="amount">{{ product.price*quantity }} руб.</span></td>
+                                            <td class="product-remove"><a href="{{ url_for('marketplace.del_product_from_cart', product_id=product.id) }}"
+                                                onclick="deleteFromCart({{ product.id }})"
+                                                id="delete_from_cart_{{ product.id }}"><i class="fa fa-times"></i></a></td>
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                          </table>
+                       </div>
+                       <div class="row">
+                          <div class="col-12">
+                                <div class="coupon-all">
+                                   <div class="coupon">
+                                      <input id="coupon_code" class="input-text" name="coupon_code" value="" placeholder="Coupon code" type="text">
+                                      <button class="cart-btn" name="apply_coupon" type="submit">Применить купон</button>
+                                   </div>
+                                   <div class="coupon2">
+                                      <a class="cart-btn" name="update_cart" href="{{ url_for('marketplace.cart') }}">Обновить корзину</a>
+                                   </div>
+                                </div>
+                          </div>
+                       </div>
+                       <div class="row justify-content-end">
+                          <div class="col-md-5">
+                                <div class="cart-page-total">
+                                   <ul class="mb-20">
+                                      <li>Итого<span>{{ count_total_money }} руб.</span></li>
+                                   </ul>
+                                   {% if products_in_cart %}
+                                        <a class="cart-btn" href="{{ url_for('marketplace.checkout_page') }}">Оформить заказ</a>
+                                   {% endif %}
+                                </div>
+                          </div>
+                       </div>
+                    {% else %}
+                       <div class="row">
+                           <div class="col-sm-6">
+                               <h5 class="card-title">В корзине нет товаров</h5>
+                           </div>
+                       </div>
+                    {% endif %}
+              </div>
+           </div>
         </div>
-        <div class="row">
-            {% for product, quantity in products_in_cart.items() %}
-                <div class="col-sm-6" id="cart_product_{{ product.id }}">
-                    <div class="card">
-                        <div class="card-body">
-                            <a href="{{ url_for('marketplace.product_page', product_id=product.id) }}">
-                                <h5 class="card-title">{{ product.name }}</h5>
-                            </a>
-                            <p class="card-text">Цена: {{ product.price }} руб.</p>
-                            <p class="card-text">Количество: {{ quantity }} шт.</p>
-                            <p class="card-text">Сумма: {{ product.price*quantity }} руб.</p>
-                            <a href="{{ url_for('marketplace.del_product_from_cart', product_id=product.id) }}"
-                               class="btn btn-primary" onclick="deleteFromCart({{ product.id }})"
-                               id="delete_from_cart_{{ product.id }}">Удалить из корзины</a>
-                        </div>
-                    </div>
-                </div>
-            {% endfor %}
-        </div>
-
-    {% else %}
-        <div class="row">
-            <div class="col-sm-6">
-                <h5 class="card-title">В корзине нет товаров</h5>
-            </div>
-        </div>
-    {% endif %}
+     </section>
+     <!-- cart-area-end -->
 
 {% endblock %}

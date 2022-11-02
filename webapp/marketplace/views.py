@@ -20,6 +20,7 @@ from webapp.services.service_payment_process import prepare_link_for_payment, is
 from webapp.services.service_send_email import send_email
 from webapp.services.service_sorting import process_sorting_product_types
 from webapp.services.service_send_sms import generate_six_digits_code, delete_symbols_from_phone_number
+from webapp.services.service_count import count_favorite_products_current_user
 
 blueprint = Blueprint('marketplace', __name__)
 
@@ -29,7 +30,6 @@ def index():
     title = "Каталог товаров"
     sorting_product_form = SortingProductForm()
     products_in_cart = get_products_in_cart()
-
     user_sorting_type = request.args.get('type_sorting')
 
     if user_sorting_type:
@@ -40,10 +40,17 @@ def index():
             products = Product.query.all()
     else:
         products = Product.query.all()
+    
 
-    return render_template('marketplace/index.html', page_title=title, products=products,
-                           products_in_cart=products_in_cart, sorting_product_form=sorting_product_form,
-                           is_user_add_product_to_favorite=is_user_add_product_to_favorite)
+    return render_template(
+        'marketplace/index.html', 
+        page_title=title, 
+        products=products,
+        products_in_cart=products_in_cart,
+        is_user_add_product_to_favorite=is_user_add_product_to_favorite,
+        sorting_product_form=sorting_product_form,
+        count_favorite_products_current_user=count_favorite_products_current_user
+    )
 
 
 @blueprint.route('/search', methods=['POST'])
@@ -72,7 +79,7 @@ def search_result():
     return redirect(url_for('marketplace.index'))
 
 
-@blueprint.route("/livesearch", methods=['POST'])
+@blueprint.route('/livesearch', methods=['POST'])
 def livesearch():
     if request.method == 'POST':
         search_text = request.form['search'].lower()
@@ -166,8 +173,14 @@ def cart():
         session['count_all_products'] = count_all_products
         session['count_total_money'] = count_total_money
 
-    return render_template('marketplace/cart.html', page_title=title, products_in_cart=products_in_cart,
-                           count_all_products=count_all_products, count_total_money=count_total_money)
+    return render_template(
+        'marketplace/cart.html', 
+        page_title=title,
+        products_in_cart=products_in_cart,
+        count_all_products=count_all_products,
+        count_total_money=count_total_money,
+        count_favorite_products_current_user=count_favorite_products_current_user
+    )
 
 
 @blueprint.route('/del_product_from_cart/<int:product_id>')
@@ -190,8 +203,14 @@ def checkout_page():
     count_all_products = session.get('count_all_products', 0)
     count_total_money = session.get('count_total_money', 0)
 
-    return render_template('marketplace/checkout.html', page_title=title, form=form,
-                           count_all_products=count_all_products, count_total_money=count_total_money)
+    return render_template(
+        'marketplace/checkout.html', 
+        page_title=title, 
+        form=form,
+        count_all_products=count_all_products, 
+        count_total_money=count_total_money,
+        count_favorite_products_current_user=count_favorite_products_current_user
+    )
 
 
 @blueprint.route('/checkout_process', methods=['POST'])
@@ -339,9 +358,14 @@ def product_page(product_id):
     if not product:
         abort(404)
 
-    return render_template('marketplace/product_page.html', page_title='Карточка товара',
-                           product=product, products_in_cart=products_in_cart,
-                           is_user_add_product_to_favorite=is_user_add_product_to_favorite)
+    return render_template(
+        'marketplace/product_page.html', 
+        page_title='Карточка товара',
+        product=product, 
+        products_in_cart=products_in_cart,
+        is_user_add_product_to_favorite=is_user_add_product_to_favorite,
+        count_favorite_products_current_user=count_favorite_products_current_user
+    )
 
 
 @blueprint.route('/category/<int:category_id>')
@@ -365,7 +389,8 @@ def category_page(category_id):
         page_title=title,
         products=products,
         products_in_cart=products_in_cart,
-        is_user_add_product_to_favorite=is_user_add_product_to_favorite
+        is_user_add_product_to_favorite=is_user_add_product_to_favorite,
+        count_favorite_products_current_user=count_favorite_products_current_user
     )
 
 
@@ -374,7 +399,12 @@ def category_page(category_id):
 def add_product():
     title = 'Добавить товар'
     form = AddNewProductForm()
-    return render_template('marketplace/add_product.html', page_title=title, form=form)
+    return render_template(
+        'marketplace/add_product.html', 
+        page_title=title, 
+        form=form,
+        count_favorite_products_current_user=count_favorite_products_current_user
+    )
 
 
 @login_required
@@ -456,15 +486,20 @@ def favorite_page():
     """Страница с понравившимся товаром пользователя"""
 
     title = "Избранное"
+    
     if current_user.is_authenticated:
         products = Product.query.filter(Product.id == UserFavoriteProduct.product_id,
                                         UserFavoriteProduct.user_id == current_user.id).all()
+        products_in_cart = get_products_in_cart()
+
         return render_template(
             'marketplace/favorite_page.html',
             page_title=title,
             products=products,
-            is_user_add_product_to_favorite=is_user_add_product_to_favorite
+            is_user_add_product_to_favorite=is_user_add_product_to_favorite,
+            products_in_cart=products_in_cart,
+            count_favorite_products_current_user=count_favorite_products_current_user
         )
     else:
-        return render_template(
-            'marketplace/favorite_page.html', page_title=title)
+        flash("Чтобы перейти в список желаемого, необходимо авторизоваиться")
+        return redirect(request.referrer)

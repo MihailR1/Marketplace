@@ -2,26 +2,44 @@
 
 {% block content %}
     {% if current_user.is_authenticated %}
-        <div class="card mb-3" style="max-width: 540px;">
-            <div class="row 12">
-                {% for product in products %}
-                    <div class="col-md-4">
-                        <img src="{{ product.photos_path }}" class="img-fluid rounded-start" alt="{{ product.name }}">
-                    </div>
-                    <div class="col-md-8">
-                        <div class="card-body">
-                            <h5 class="card-title">{{ product.name }}</h5>
-                            <p class="card-text"> {{ product.description }}</p>
-                            <p class="card-text"> Цвет: {{ product.color }}</p>
-                            <p class="card-text"> Размеры: {{ product.size }}</p>
-                            <p class="card-text"> Цена: {{ product.price }} руб.</p>
-                            {% include 'marketplace/favorite_area.html' %}
-                            {% include 'add_to_cart_section.html' %}
+        <section class="cart-area pb-120 pt-120">
+            <div class="container">
+                <div class="row">
+                    <div class="col-12">
+                        <div class="table-content table-responsive">
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                        <th class="product-thumbnail">Изображение</th>
+                                        <th class="cart-product-name">Название</th>
+                                        <th class="product-price">Цена</th>
+                                        <th class="product-quantity">Добавить в корзину</th>
+                                        <th class="product-remove">Удалить</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for product in products %}
+                                        <tr>
+                                            <td class="product-thumbnail"><a href="shop-details.html"><img src="{{ product.photos_path }}" alt="{{ product.name }}"></a></td>
+                                            <td class="product-name"><a href="shop-details.html">{{ product.name }}</a></td>
+                                            <td class="product-price"><span class="amount">{{ product.price }} руб.</span></td>
+                                            <td class="product-quantity">
+                                                <button class="tp-btn-h1" type="submit">Добавить в корзину</button>
+                                            </td>
+                                            <td class="product-remove">
+                                                <a href="{{ url_for('marketplace.del_favorite_product', product_id=product.id) }}">
+                                                    <i class="fa fa-times"></i>
+                                                </a>
+                                            </td>
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
                         </div>
                     </div>
-                {% endfor %}
+                </div>
             </div>
-        </div>
+        </section>
     {% else %}
         <div class="row">
             <div class="col-sm-6">

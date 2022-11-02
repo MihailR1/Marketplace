@@ -1,8 +1,7 @@
-<div class="btn btn-primary" id="button_add_to_cart_{{ product.id }}"
-     onclick="addToCart({{ product.id }}, {% if products_in_cart %} {{ products_in_cart[product.id ] }} {% else %} 1{% endif %})">
+<button class="cart-btn-2 mr-10" id="button_add_to_cart_{{ product.id }}"
+     onclick="addToCart({{ product.id }}, {% if products_in_cart %} {{ products_in_cart[product.id ] }} {% else %} 1 {% endif %})">
     Добавить в корзину
-</div>
-
+</button>
 <div id="add_to_basket_{{ product.id }}" , style="display: none">
     <p>Товар добавлен в корзину. <a href="{{ url_for('marketplace.cart') }}">Перейти в
         корзину</a></p>

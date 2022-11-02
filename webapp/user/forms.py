@@ -9,7 +9,7 @@ class LoginForm(FlaskForm):
     email = StringField('Электронный адрес', validators=[DataRequired()], render_kw={"class": "form-control"})
     password = PasswordField('Пароль', validators=[DataRequired()], render_kw={"class": "form-control"})
     remember_me = BooleanField('Запомнить меня', default=True, render_kw={"class": "from-check-input"})
-    submit = SubmitField('Отправить!', render_kw={"class": "btn btn-primary"})
+    submit = SubmitField('Отправить!', render_kw={"class": "cart-btn"})
 
 
 class RegistrationForm(FlaskForm):
@@ -20,7 +20,7 @@ class RegistrationForm(FlaskForm):
     password = PasswordField('Пароль', validators=[DataRequired()], render_kw={"class": "form-control"})
     password2 = PasswordField('Повторите пароль', validators=[DataRequired(), EqualTo('password')],
                               render_kw={"class": "form-control"})
-    submit = SubmitField('Отправить!', render_kw={"class": "btn btn-primary"})
+    submit = SubmitField('Отправить!', render_kw={"class": "cart-btn"})
 
     def validate_email(self, email):
         user_count = User.query.filter_by(email=email.data).count()
@@ -32,6 +32,13 @@ class RegistrationForm(FlaskForm):
             user_count = User.query.filter_by(phone_number=phone_number.data).count()
             if user_count > 0:
                 raise ValidationError('Пользователь с таким номером телефона уже существует')
+
+
+class UpdateDataProfileUserForm(FlaskForm):
+    phone_number = StringField('Номер телефона', render_kw={"class": "form-control"})
+    full_name = StringField('Полное имя', render_kw={"class": "form-control"})
+    shipping_adress = StringField('Адрес доставки', render_kw={"class": "form-control"})
+    submit = SubmitField('Отправить!', render_kw={"class": "cart-btn"})
 
 
 class SmsAuthForm(FlaskForm):
