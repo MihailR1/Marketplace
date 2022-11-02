@@ -23,10 +23,9 @@ class RegistrationForm(FlaskForm):
     submit = SubmitField('Отправить!', render_kw={"class": "btn btn-primary"})
 
     def validate_email(self, email):
-        if email.data:
-            user_count = User.query.filter_by(email=email.data).count()
-            if user_count > 0:
-                raise ValidationError('Пользователь с таким адресом уже существует')
+        user_count = User.query.filter_by(email=email.data).count()
+        if user_count > 0:
+            raise ValidationError('Пользователь с таким адресом уже существует')
 
     def validate_phone_number(self, phone_number):
         if phone_number.data:

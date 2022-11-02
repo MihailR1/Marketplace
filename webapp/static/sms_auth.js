@@ -19,7 +19,7 @@ $(document).ready(function () {
 
                             setTimeout(function () {
                                 window.location.href = '/';
-                            }, 1 * 1000);
+                            }, 3 * 1000);
                         }
                     }
                 }

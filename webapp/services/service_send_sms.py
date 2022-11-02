@@ -1,4 +1,4 @@
-from random import randint
+from random import randrange
 
 import requests
 from loguru import logger
@@ -10,8 +10,7 @@ from webapp.user.models import User
 
 
 def generate_six_digits_code() -> str:
-    generated_code = ''.join([str(randint(0, 9)) for _ in range(6)])
-    return generated_code
+    return randrange(10 ** 6)
 
 
 def delete_symbols_from_phone_number(phone_number) -> str:

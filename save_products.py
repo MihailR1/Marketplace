@@ -7,6 +7,7 @@ import requests
 import pandas as pd
 from loguru import logger
 from dotenv import load_dotenv
+from tenacity import retry, wait_fixed, stop_after_attempt
 from sqlalchemy.exc import SQLAlchemyError
 
 from webapp import create_app
@@ -75,10 +76,10 @@ def save_products(products_frame) -> None:
             except SQLAlchemyError as error:
                 logger.exception(f'Ошибка при сохранении продукта в БД {error}')
                 db.session.rollback()
-
     db.session.commit()
 
 
+@retry(wait=wait_fixed(80), stop=stop_after_attempt(3))
 def save_photos_in_path(photos_url, product_id) -> list:
     photos_url_list = photos_url.split(';')
     list_with_photos_path = []
@@ -88,19 +89,18 @@ def save_photos_in_path(photos_url, product_id) -> list:
 
         try:
             photo_response = requests.get(photo_url)
+            photo_response.raise_for_status()
         except requests.RequestException as error:
             logger.exception(f'Ошибка обращения к фотографии продукта {error}')
-            photo_response = None
+            continue
 
-        if photo_response:
-            if photo_response.status_code == 200:
-                product_path = os.path.join(UPLOAD_PATH, f'product_{product_id}')
-                os.makedirs(product_path, exist_ok=True)
-                target_name_and_path_for_product = os.path.join(product_path, f'{index}.{photo_extension}')
-                list_with_photos_path.append(target_name_and_path_for_product)
+        product_path = os.path.join(UPLOAD_PATH, f'product_{product_id}')
+        os.makedirs(product_path, exist_ok=True)
+        target_name_and_path_for_product = os.path.join(product_path, f'{index}.{photo_extension}')
+        list_with_photos_path.append(target_name_and_path_for_product)
 
-                with open(target_name_and_path_for_product, 'wb') as photo_path:
-                    photo_path.write(photo_response.content)
+        with open(target_name_and_path_for_product, 'wb') as photo_path:
+            photo_path.write(photo_response.content)
 
     return list_with_photos_path
 
