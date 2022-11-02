@@ -2,8 +2,7 @@ from uuid import uuid4
 from datetime import datetime
 
 import requests
-from flask import Blueprint, flash, render_template, redirect, url_for, abort, request, jsonify, session, Markup, \
-    Response
+from flask import Blueprint, flash, render_template, redirect, url_for, abort, request, jsonify, session, Markup, Response
 from flask_login import current_user, login_required
 
 from webapp.db import db
@@ -222,7 +221,7 @@ def checkout_process():
                 create_user = User(email=form.email.data, phone_number=phone_number,
                                    shipping_adress=form.shipping_adress.data, full_name=form.full_name.data,
                                    role=UserRole.user)
-                generated_user_password = str(generate_six_digits_code())
+                generated_user_password = generate_six_digits_code()
                 create_user.set_password(generated_user_password)
                 db.session.add(create_user)
                 db.session.commit()

@@ -10,7 +10,7 @@ from webapp.user.models import User
 
 
 def generate_six_digits_code() -> str:
-    return randrange(10 ** 6)
+    return str(randrange(10 ** 5, 10 ** 6))
 
 
 def delete_symbols_from_phone_number(phone_number) -> str:
