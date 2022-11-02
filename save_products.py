@@ -8,7 +8,6 @@ import pandas as pd
 from loguru import logger
 from dotenv import load_dotenv
 from tenacity import retry, wait_fixed, stop_after_attempt
-from sqlalchemy.exc import SQLAlchemyError
 
 from webapp import create_app
 from webapp.db import db
@@ -71,15 +70,21 @@ def save_products(products_frame) -> None:
                 size=row['Размер'],
                 quantity=row['Остаток'],
             )
-            try:
-                db.session.add(product)
-            except SQLAlchemyError as error:
-                logger.exception(f'Ошибка при сохранении продукта в БД {error}')
-                db.session.rollback()
+            db.session.add(product)
+
     db.session.commit()
 
 
-@retry(wait=wait_fixed(80), stop=stop_after_attempt(3))
+@retry(wait=wait_fixed(3), stop=stop_after_attempt(3))
+def response_for_photo(photo_url):
+    try:
+        photo_response = requests.get(photo_url)
+        photo_response.raise_for_status()
+        return photo_response
+    except requests.RequestException as error:
+        raise error
+
+
 def save_photos_in_path(photos_url, product_id) -> list:
     photos_url_list = photos_url.split(';')
     list_with_photos_path = []
@@ -88,8 +93,7 @@ def save_photos_in_path(photos_url, product_id) -> list:
         photo_extension = photo_url.split('.')[-1]
 
         try:
-            photo_response = requests.get(photo_url)
-            photo_response.raise_for_status()
+            photo_response = response_for_photo(photo_url)
         except requests.RequestException as error:
             logger.exception(f'Ошибка обращения к фотографии продукта {error}')
             continue
@@ -118,11 +122,7 @@ def save_photos_for_products(products_frame) -> None:
             for path in photos_path:
                 photo_product = Photo(product_id=product_id, photos_path=path)
 
-                try:
-                    db.session.add(photo_product)
-                except SQLAlchemyError as error:
-                    logger.exception(f'Ошибка при сохранении фото для продукта в БД {error}')
-                    db.session.rollback()
+                db.session.add(photo_product)
 
     db.session.commit()
 
