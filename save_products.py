@@ -77,12 +77,9 @@ def save_products(products_frame) -> None:
 
 @retry(wait=wait_fixed(3), stop=stop_after_attempt(3))
 def response_for_photo(photo_url):
-    try:
-        photo_response = requests.get(photo_url)
-        photo_response.raise_for_status()
-        return photo_response
-    except requests.RequestException:
-        raise
+    photo_response = requests.get(photo_url)
+    photo_response.raise_for_status()
+    return photo_response
 
 
 def save_photos_in_path(photos_url, product_id) -> list:
