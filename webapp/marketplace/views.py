@@ -2,7 +2,8 @@ from uuid import uuid4
 from datetime import datetime
 
 import requests
-from flask import Blueprint, flash, render_template, redirect, url_for, abort, request, jsonify, session, Markup, Response
+from flask import Blueprint, flash, render_template, redirect, url_for, abort, request, jsonify, session, Markup, \
+    Response
 from flask_login import current_user, login_required
 
 from webapp.db import db
@@ -278,15 +279,10 @@ def payment_process(user_id):
 
 @blueprint.route('/payment_status_from_yoomoney', methods=['POST'])
 def payment_status_from_yoomoney():
-    payment_number = None
-    try:
-        request_holder = request
-        payment_number = request.form["label"]
-    except KeyError:
-        pass
+    payment_number = request.get('label', None)
 
     if payment_number:
-        is_payment_verified = verify_payment(request_holder)
+        is_payment_verified = verify_payment(request)
 
         if is_payment_verified:
             shopping_order = ShoppingOrder.query.filter(ShoppingOrder.order_number == payment_number).first()
