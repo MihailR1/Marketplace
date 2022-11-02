@@ -81,8 +81,8 @@ def response_for_photo(photo_url):
         photo_response = requests.get(photo_url)
         photo_response.raise_for_status()
         return photo_response
-    except requests.RequestException as error:
-        raise error
+    except requests.RequestException:
+        raise
 
 
 def save_photos_in_path(photos_url, product_id) -> list:
