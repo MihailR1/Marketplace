@@ -10,3 +10,7 @@ class EmailEventsForUser(Enum):
 class UserRole(Enum):
     admin = 'admin'
     user = 'user'
+
+
+class SmsEventsForUser(Enum):
+    send_auth_sms = 'send_authentication_sms_code_to_user'

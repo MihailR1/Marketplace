@@ -19,6 +19,7 @@ from webapp.services.service_favorite_product import is_user_add_product_to_favo
 from webapp.services.service_payment_process import prepare_link_for_payment, is_order_paid
 from webapp.services.service_send_email import send_email
 from webapp.services.service_sorting import process_sorting_product_types
+from webapp.services.service_send_sms import generate_six_digits_code, delete_symbols_from_phone_number
 
 blueprint = Blueprint('marketplace', __name__)
 
@@ -197,10 +198,11 @@ def checkout_page():
 def checkout_process():
     form = CheckoutForm()
     if form.validate_on_submit():
+        phone_number = delete_symbols_from_phone_number(form.phone_number.data)
         user = User.query.filter(User.email == form.email.data).first()
 
         if user == current_user:
-            user.phone_number = form.phone_number.data
+            user.phone_number = phone_number
             user.shipping_adress = form.shipping_adress.data
             user.full_name = form.full_name.data
             db.session.commit()
@@ -214,12 +216,12 @@ def checkout_process():
             return redirect(url_for('marketplace.checkout_page'))
 
         elif not user:
-            user_by_phone = User.query.filter(User.phone_number == form.phone_number.data).first()
+            user_by_phone = User.query.filter(User.phone_number == phone_number).first()
             if not user_by_phone:
-                create_user = User(email=form.email.data, phone_number=form.phone_number.data,
+                create_user = User(email=form.email.data, phone_number=phone_number,
                                    shipping_adress=form.shipping_adress.data, full_name=form.full_name.data,
                                    role=UserRole.user)
-                generated_user_password = str(uuid4())
+                generated_user_password = generate_six_digits_code()
                 create_user.set_password(generated_user_password)
                 db.session.add(create_user)
                 db.session.commit()
@@ -227,6 +229,13 @@ def checkout_process():
                            password=generated_user_password)
                 user_id = create_user.id
                 save_products_into_db_from_session_cart(create_user)
+            elif user_by_phone == current_user:
+                user_by_phone.phone_number = phone_number
+                user_by_phone.email = form.email.data
+                user_by_phone.shipping_adress = form.shipping_adress.data
+                user_by_phone.full_name = form.full_name.data
+                db.session.commit()
+                user_id = user_by_phone.id
             else:
                 save_unauthenticated_user_data_in_session(form)
                 flash(Markup(f'''Пользователь с таким телефоном зарегистрирован в системе. 
@@ -251,7 +260,7 @@ def payment_process(user_id):
     order_number = str(uuid4())
     payment_amount = sum([product.quantity * product.product_info.price for product in shopping_cart])
 
-    new_order = ShoppingOrder(order_id=order_number, user_id=user_id, amount=payment_amount,
+    new_order = ShoppingOrder(order_number=order_number, user_id=user_id, amount=payment_amount,
                               is_order_paid=False)
     db.session.add(new_order)
     db.session.commit()

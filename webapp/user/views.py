@@ -1,11 +1,12 @@
-from flask import Blueprint, flash, render_template, redirect, url_for, session, request
+from flask import Blueprint, flash, render_template, redirect, url_for, jsonify, session, request, Markup
 from flask_login import current_user, login_user, logout_user
 
 from webapp.db import db
-from webapp.user.forms import LoginForm, RegistrationForm
+from webapp.user.forms import LoginForm, RegistrationForm, SmsAuthForm
 from webapp.user.models import User
-from webapp.user.enums import EmailEventsForUser, UserRole
+from webapp.user.enums import EmailEventsForUser, SmsEventsForUser, UserRole
 from webapp.services.service_send_email import send_email
+from webapp.services.service_send_sms import delete_symbols_from_phone_number, generate_six_digits_code, send_sms
 from webapp.services.service_redirect_utils import redirect_back
 from webapp.services.service_cart import save_products_into_db_from_session_cart
 
@@ -92,3 +93,77 @@ def process_reg():
                     error
                 ))
     return redirect(url_for('user.register'))
+
+
+@blueprint.route('/sms_auth')
+def sms_auth():
+    if current_user.is_authenticated:
+        return redirect(url_for('marketplace.index'))
+
+    title = "Регистрация и авторизация по коду из смс"
+    form = SmsAuthForm()
+    return render_template('user/sms_auth.html', page_title=title, form=form)
+
+
+@blueprint.route('/process_auth_sms', methods=['POST'])
+def process_auth_sms():
+    form_phone_number = SmsAuthForm()
+
+    if form_phone_number.validate_on_submit():
+        phone_number = delete_symbols_from_phone_number(form_phone_number.phone_number.data)
+        user = User.query.filter(User.phone_number == phone_number).first()
+
+        if not user:
+            user = User(
+                phone_number=phone_number,
+                role=UserRole.user,
+            )
+            user.set_password(generate_six_digits_code())
+            db.session.add(user)
+            db.session.commit()
+
+        code_for_sms = generate_six_digits_code()
+        send_sms_with_code = send_sms(SmsEventsForUser.send_auth_sms, user, generated_code=code_for_sms)
+
+        if send_sms_with_code:
+            session['sms_code'] = code_for_sms
+            session['sms_send'] = True
+            session['user_phone'] = phone_number
+
+            flash('СМС с кодом отправлено')
+            return sms_confirmation()
+        else:
+            flash(Markup(f'''При отправке смс произошла ошибка, попробуйте еще раз или <a href="{url_for('user.login')}" 
+            class="alert-link">авторизуйтесь по email</a>'''))
+            return redirect(url_for('user.sms_auth'))
+
+    else:
+        for field, errors in form_phone_number.errors.items():
+            for error in errors:
+                flash(f'Ошибка в поле {getattr(form_phone_number, field).label.text}: {error}')
+    return redirect(url_for('user.sms_auth'))
+
+
+@blueprint.route('/sms_confirmation')
+def sms_confirmation():
+    title = "Регистрация и авторизация по коду из смс"
+
+    return render_template('user/sms_confirmation.html', page_title=title)
+
+
+@blueprint.route('/check_sms', methods=['POST'])
+def check_sms():
+    is_sms_sent = session.get('sms_send', False)
+    is_user_answer_right = False
+    generated_sms_code = session['sms_code']
+    user_phone = session['user_phone']
+    user_code = request.form['user_code']
+
+    if user_code == generated_sms_code:
+        is_user_answer_right = True
+        user = User.query.filter(User.phone_number == user_phone).first()
+        login_user(user)
+        save_products_into_db_from_session_cart(user)
+        flash("Вы успешно вошли на сайт")
+
+    return jsonify({"is_sms_sent": is_sms_sent, "is_user_answer_right": is_user_answer_right})

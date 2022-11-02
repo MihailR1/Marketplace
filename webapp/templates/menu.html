@@ -32,13 +32,18 @@
                 {% endif %}
             </a>
             {% if current_user.is_authenticated %}
-                <li class="nav-item">
-                    <span class="nav-link">Привет, {{ current_user.email }}</span>
-                </li>
+                {% if current_user.email %}
+                    <li class="nav-item">
+                        <span class="nav-link">Привет, {{ current_user.email }}</span>
+                    </li>
+                {% endif %}
                 <li class="nav-item">
                     <a class="nav-link" href="{{ url_for('user.logout') }}">Выйти</a>
                 </li>
             {% else %}
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ url_for('user.sms_auth') }}">Авторизация по смс</a>
+                </li>
                 <li class="nav-item">
                     <a class="nav-link" href="{{ url_for('user.register') }}">Регистрация</a>
                 </li>
