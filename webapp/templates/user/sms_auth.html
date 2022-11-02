@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+
+{% block content %}
+    {% if current_user.is_authenticated %}
+        <div class="row">
+            <div class="col-4">
+                <span class="nav-link">Вы уже авторизованы</span>
+            </div>
+        </div>
+    {% else %}
+
+        <div class="row">
+            <div class="col-4">
+                <div id="sms_auth_form">
+                    <form action="{{ url_for('user.process_auth_sms') }}" id="phone_auth_form" method="POST">
+                        {{ form.hidden_tag() }}
+                        <div class="form-group">
+                            {{ form.phone_number.label }}
+                            {{ form.phone_number() }}
+                        </div>
+                        <div class="form-group">
+                            {{ form.submit() }}
+                        </div>
+                    </form>
+                </div>
+
+            </div>
+            <div class="col-8">
+            </div>
+        </div>
+
+    {% endif %}
+{% endblock %}
