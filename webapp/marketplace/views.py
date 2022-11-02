@@ -2,8 +2,7 @@ from uuid import uuid4
 from datetime import datetime
 
 import requests
-from flask import Blueprint, flash, render_template, redirect, url_for, abort, request, jsonify, session, Markup, \
-    Response
+from flask import Blueprint, flash, render_template, redirect, url_for, abort, request, jsonify, session, Markup, Response
 from flask_login import current_user, login_required
 
 from webapp.db import db
