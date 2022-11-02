@@ -202,8 +202,14 @@ def checkout_page():
     count_all_products = session.get('count_all_products', 0)
     count_total_money = session.get('count_total_money', 0)
 
-    return render_template('marketplace/checkout.html', page_title=title, form=form,
-                           count_all_products=count_all_products, count_total_money=count_total_money)
+    return render_template(
+        'marketplace/checkout.html', 
+        page_title=title, 
+        form=form,
+        count_all_products=count_all_products, 
+        count_total_money=count_total_money,
+        count_favorite_products_current_user=count_favorite_products_current_user
+    )
 
 
 @blueprint.route('/checkout_process', methods=['POST'])
@@ -367,7 +373,8 @@ def category_page(category_id):
         page_title=title,
         products=products,
         products_in_cart=products_in_cart,
-        is_user_add_product_to_favorite=is_user_add_product_to_favorite
+        is_user_add_product_to_favorite=is_user_add_product_to_favorite,
+        count_favorite_products_current_user=count_favorite_products_current_user
     )
 
 

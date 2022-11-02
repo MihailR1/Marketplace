@@ -47,4 +47,4 @@ class CheckoutForm(FlaskForm):
     phone_number = StringField('Номер телефона', render_kw={"class": "form-control"})
     full_name = StringField('Полное имя', validators=[DataRequired()], render_kw={"class": "form-control"})
     shipping_adress = StringField('Адрес доставки', validators=[DataRequired()], render_kw={"class": "form-control"})
-    submit = SubmitField('Перейти к оплате', render_kw={"class": "btn btn-primary"})
+    submit = SubmitField('Перейти к оплате', render_kw={"class": "cart-btn"})

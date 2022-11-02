@@ -48,54 +48,24 @@
                             </div>
                             <div class="block-cart action">
                                 <a class="icon-link" href="{{ url_for('marketplace.cart') }}">
-                                <i class="flaticon-shopping-bag"></i>
-                                <span class="count">1</span>
-                                <span class="text">
-                                <span class="sub">Your Cart:</span>
-                                $00.00 </span>
+                                    <i class="flaticon-shopping-bag"></i>
+                                    <span class="count">
+                                        {% if number_products_in_cart %}
+                                            {{ number_products_in_cart }}
+                                        {% else %}
+                                            0
+                                        {% endif %}
+                                    </span>
+                                    {% if products_in_cart %}
+                                        <span class="text">
+                                        <span class="sub">Ваша корзина:</span>
+                                        {{ count_total_money }} руб.</span>
+                                    {% else %}
+                                        <span class="text">
+                                        <span class="sub">Ваша корзина:</span>
+                                        0 руб.</span>
+                                    {% endif %}
                                 </a>
-                                <div class="cart">
-                                    <div class="cart__mini">
-                                        <ul>
-                                            <li>
-                                              <div class="cart__title">
-                                                <h4>Your Cart</h4>
-                                                <span>(1 Item in Cart)</span>
-                                              </div>
-                                            </li>
-                                            <li>
-                                              <div class="cart__item d-flex justify-content-between align-items-center">
-                                                <div class="cart__inner d-flex">
-                                                  <div class="cart__thumb">
-                                                    <a href="product-details.html">
-                                                      <img src="img/cart/20.jpg" alt="">
-                                                    </a>
-                                                  </div>
-                                                  <div class="cart__details">
-                                                    <h6><a href="product-details.html"> Samsung C49J89: £875, Debenhams Plus  </a></h6>
-                                                    <div class="cart__price">
-                                                      <span>$255.00</span>
-                                                    </div>
-                                                  </div>
-                                                </div>
-                                                <div class="cart__del">
-                                                    <a href="#"><i class="fal fa-times"></i></a>
-                                                </div>
-                                              </div>
-                                            </li>
-                                            <li>
-                                              <div class="cart__sub d-flex justify-content-between align-items-center">
-                                                <h6>Subtotal</h6>
-                                                <span class="cart__sub-total">$255.00</span>
-                                              </div>
-                                            </li>
-                                            <li>
-                                                <a href="cart.html" class="wc-cart mb-10">View cart</a>
-                                                <a href="checkout.html" class="wc-checkout">Checkout</a>
-                                            </li>
-                                        </ul>
-                                    </div>
-                                </div>
                             </div>
                         </div>
                     </div>
@@ -109,15 +79,9 @@
                 <div class="col-lg-3">                        
                     <div class="cat__menu-wrapper side-border d-none d-lg-block">
                         <div class="cat-toggle">
-                            <button type="button" class="cat-toggle-btn cat-toggle-btn-1"><i class="fal fa-bars"></i> Shop by department</button>
+                            <button type="button" class="cat-toggle-btn cat-toggle-btn-1"><i class="fal fa-bars"></i>Категории товаров</button>
                             <div class="cat__menu">
-                                <nav id="mobile-menu" style="display: block;">
-                                    <ul>
-                                        <li>
-                                            
-                                        </li>
-                                    </ul>
-                                </nav>
+                                {% include "category_menu.html" %}
                             </div>
                         </div>
                     </div>
@@ -145,5 +109,4 @@
         </div>
     </div>
 </header>
-{% include 'category_menu.html' %}
 <!-- header-end -->

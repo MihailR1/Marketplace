@@ -47,14 +47,12 @@
                             <div class="product-quantity mr-20">
                                 <div class="cart-plus-minus p-relative"><input type="text" value="1"><div class="dec qtybutton">-</div><div class="inc qtybutton">+</div></div>
                             </div>
-                            {% include 'add_to_cart_section.html' %}
+                            <div class="cart-option"></div>
+                                {% include 'add_to_cart_section.html' %}
+                                {% include 'marketplace/favorite_area.html' %}
+                            </div>
                         </div>
                         <div class="details-meta">
-                            <div class="d-meta-left">
-                                <div class="dm-item mr-20">
-                                    {% include 'marketplace/favorite_area.html' %}
-                                </div>
-                            </div>
                             <div class="d-meta-left">
                                 <div class="dm-item">
                                     <a href="#"><i class="fal fa-share-alt"></i>Share</a>

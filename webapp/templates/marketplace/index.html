@@ -1,10 +1,11 @@
 {% extends "base.html" %}
 
 {% block content %}
-    <div class="col-xl-9 col-lg-8">
+    <div class="col-xl-12 col-lg-11">
         <div class="product-lists-top">
             <div class="product__filter-wrap">
                 <div class="row align-items-center">
+
                     <div class="col-xxl-6 col-xl-6 col-lg-6 col-md-6">
                         <div class="product__filter d-sm-flex align-items-center">
                             <div class="product__col">
@@ -21,13 +22,15 @@
                                     </li>
                                 </ul>
                             </div>
-                            <div class="product__result pl-60">
-                                <p>Showing 1-20 of 29 relults</p>
+                            <div class="product__sorting pl-60">
+                                {% include 'marketplace/product_sort.html' %}
                             </div>
+                            
                         </div>
                     </div>
                     <div class="col-xxl-6 col-xl-6 col-lg-6 col-md-6">
                         <div class="product__filter-right d-flex align-items-center justify-content-md-end">
+                            
                             <div class="product__sorting product__show-no">
                                 <select>
                                     <option>10</option>
@@ -36,6 +39,7 @@
                                     <option>40</option>
                                 </select>
                             </div>
+                            
                             <div class="product__sorting product__show-position ml-20">
                                 <select>
                                     <option>Latest</option>
