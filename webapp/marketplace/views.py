@@ -265,9 +265,7 @@ def payment_process(user_id):
     db.session.add(new_order)
     db.session.commit()
 
-    if not current_user.is_authenticated:
-        session['order_number'] = order_number
-        session.modified = True
+    session['order_number'] = order_number
 
     try:
         payment_link = prepare_link_for_payment(payment_amount, order_number)
@@ -278,18 +276,33 @@ def payment_process(user_id):
     return redirect(payment_link, code=302)
 
 
+@blueprint.route('/payment_status_from_yoomoney', methods=['POST'])
+def payment_status_from_yoomoney():
+    try:
+        payment_number = request.form['label']
+    except KeyError:
+        pass
+    print('number',payment_number)
+    if payment_number:
+        shopping_order = ShoppingOrder.query.filter(ShoppingOrder.order_number == payment_number).first()
+        shopping_order.is_order_paid = True
+        shopping_order.paid_datetime = datetime.now()
+        paid_products_in_cart = ShoppingCart.query.filter(ShoppingCart.user_id == shopping_order.user.id,
+                                                          ShoppingCart.order_id == payment_number).all()
+        for product in paid_products_in_cart:
+            product.order_id = shopping_order.id
+            product.is_shopping_cart_paid = True
+
+        db.session.commit()
+        send_email(EmailEventsForUser.order_successfully_paid, shopping_order.user)
+
+        return 200
+    return request.Response(200)
+
+
 @blueprint.route('/check_payment', methods=['POST'])
 def check_payment():
-    if current_user.is_authenticated:
-        shopping_order = ShoppingOrder.query.filter(ShoppingOrder.user_id == current_user.id,
-                                                    ShoppingOrder.is_order_paid == False).all()
-    else:
-        order_number = session.get('order_number', None)
-        shopping_order = ShoppingOrder.query.filter(ShoppingOrder.order_number == order_number,
-                                                    ShoppingOrder.is_order_paid == False).all()
-
-    shopping_order = shopping_order[-1]
-    order_number = shopping_order.order_number
+    order_number = session.get('order_number', None)
     payment_status = False
 
     if order_number:
@@ -299,22 +312,14 @@ def check_payment():
             pass
 
     if payment_status:
-        if not current_user.is_authenticated:
+        try:
             del session['shopping_cart']
-            del session['count_all_products']
-            del session['count_total_money']
-            session.modified = True
-
-        shopping_order.is_order_paid = True
-        shopping_order.paid_datetime = datetime.now()
-        paid_products_in_cart = ShoppingCart.query.filter(ShoppingCart.user_id == shopping_order.user.id,
-                                                          ShoppingCart.is_shopping_cart_paid == False).all()
-        for product in paid_products_in_cart:
-            product.order_id = shopping_order.id
-            product.is_shopping_cart_paid = True
-
-        db.session.commit()
-        send_email(EmailEventsForUser.order_successfully_paid, shopping_order.user)
+        except KeyError:
+            pass
+        del session['count_all_products']
+        del session['count_total_money']
+        del session['order_number']
+        session.modified = True
 
     return jsonify({"payment_status": payment_status})
 
