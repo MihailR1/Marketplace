@@ -13,6 +13,7 @@ from webapp.user.models import User
 from webapp.user.views import blueprint as user_blueprint
 from webapp.services.service_cart import get_number_of_unique_products_in_cart
 from webapp.services.service_count import count_favorite_products_current_user
+from celery_app import celery
 
 
 def create_app():
@@ -21,6 +22,7 @@ def create_app():
     cache.init_app(app)  # Подключение Кэша
     db.init_app(app)  # Инициализация БД
     migrate = Migrate(app, db)  # Для миграции-изменения структуры БД
+    celery.conf.update(app.config)
     logger.add(LOG_FILES_PATH, format='[{time:YYYY-MM-DD HH:mm:ss}] [{level}] [{file}:{function}:{line}] | {message}',
                level='INFO')
 
@@ -39,7 +41,7 @@ def create_app():
         form_search = SearchForm()
         form_search.search_input.data = ''
         unique_products_in_cart = get_number_of_unique_products_in_cart()
-        number_of_favorite_products = count_favorite_products_current_user
+        number_of_favorite_products = count_favorite_products_current_user()
 
         @cache.cached(timeout=18000, key_prefix='dropdown_categories')
         def dropdown_categories():

@@ -2,7 +2,8 @@ from uuid import uuid4
 from datetime import datetime
 
 import requests
-from flask import Blueprint, flash, render_template, redirect, url_for, abort, request, jsonify, session, Markup, Response
+from flask import (Blueprint, flash, render_template, redirect, url_for, abort, request, jsonify, session, Markup,
+                   Response)
 from flask_login import current_user, login_required
 
 from webapp.db import db
@@ -17,9 +18,9 @@ from webapp.services.service_cart import (get_product_by_id, search_products_by_
                                           save_unauthenticated_user_data_in_session)
 from webapp.services.service_favorite_product import is_user_add_product_to_favorite
 from webapp.services.service_payment_process import prepare_link_for_payment, is_order_paid, verify_payment
-from webapp.services.service_send_email import send_email
 from webapp.services.service_sorting import process_sorting_product_types
 from webapp.services.service_send_sms import generate_six_digits_code, delete_symbols_from_phone_number
+from webapp.user.tasks import send_email
 
 blueprint = Blueprint('marketplace', __name__)
 
@@ -239,8 +240,8 @@ def checkout_process():
                 create_user.set_password(generated_user_password)
                 db.session.add(create_user)
                 db.session.commit()
-                send_email(EmailEventsForUser.letter_with_account_password, create_user,
-                           password=generated_user_password)
+                send_email.delay(EmailEventsForUser.letter_with_account_password, create_user,
+                                 password=generated_user_password)
                 user_id = create_user.id
                 save_products_into_db_from_session_cart(create_user)
             elif user_by_phone == current_user:
@@ -309,7 +310,7 @@ def payment_status_from_yoomoney():
                 product.is_shopping_cart_paid = True
 
             db.session.commit()
-            send_email(EmailEventsForUser.order_successfully_paid, shopping_order.user)
+            send_email.delay(EmailEventsForUser.order_successfully_paid, shopping_order.user)
 
             return Response(status=200)
 

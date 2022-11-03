@@ -5,8 +5,8 @@ from webapp.db import db
 from webapp.user.forms import LoginForm, RegistrationForm, SmsAuthForm, UpdateDataProfileUserForm
 from webapp.user.models import User
 from webapp.user.enums import EmailEventsForUser, SmsEventsForUser, UserRole
-from webapp.services.service_send_email import send_email
-from webapp.services.service_send_sms import delete_symbols_from_phone_number, generate_six_digits_code, send_sms
+from webapp.user.tasks import send_email, send_sms
+from webapp.services.service_send_sms import delete_symbols_from_phone_number, generate_six_digits_code
 from webapp.services.service_redirect_utils import redirect_back
 from webapp.services.service_cart import save_products_into_db_from_session_cart
 
@@ -85,7 +85,7 @@ def process_reg():
         db.session.add(new_user)
         db.session.commit()
         flash('Вы успешно зарегистрировались')
-        send_email(EmailEventsForUser.hello_letter, new_user)
+        send_email.delay(EmailEventsForUser.hello_letter, new_user)
         return redirect(url_for('marketplace.index'))
 
     else:
@@ -136,7 +136,7 @@ def process_update_data_user():
         flash('Вы успешно изменили свои данные')
         return redirect(url_for('user.profile_user'))
     else:
-        flash("Чтобы изменить свои данные, необходимо авторизоваиться или зарегистрироваться")
+        flash("Чтобы изменить свои данные, необходимо авторизоваться или зарегистрироваться")
         return redirect(request.referrer)
 
 
@@ -168,7 +168,7 @@ def process_auth_sms():
             db.session.commit()
 
         code_for_sms = generate_six_digits_code()
-        send_sms_with_code = send_sms(SmsEventsForUser.send_auth_sms, user, generated_code=code_for_sms)
+        send_sms_with_code = send_sms.delay(SmsEventsForUser.send_auth_sms, user, generated_code=code_for_sms)
 
         if send_sms_with_code:
             session['sms_code'] = code_for_sms

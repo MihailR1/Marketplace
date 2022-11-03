@@ -5,7 +5,6 @@ from loguru import logger
 from webapp.services import service_mainsms as mainsms
 
 from webapp.config import MAINSMS_API_KEY, MAINSMS_PROJECT_NAME
-from webapp.user.enums import SmsEventsForUser
 from webapp.user.models import User
 
 
@@ -16,22 +15,6 @@ def generate_six_digits_code() -> str:
 def delete_symbols_from_phone_number(phone_number) -> str:
     clear_phone_number = ''.join([digit for digit in phone_number if digit.isdigit()])
     return clear_phone_number
-
-
-def send_sms(event, user: User, **kwargs) -> bool:
-    event_to_sms_event_handler_func_mapper = {
-        SmsEventsForUser.send_auth_sms: send_authentication_sms_code_to_user
-    }
-    response = event_to_sms_event_handler_func_mapper[event](user, **kwargs)
-
-    if response:
-        if response['status'] == 'success':
-            logger.info(f'СМС успешно отправлено на номер: {user.phone_number}')
-            return True
-        else:
-            logger.info(f'Ошибка во время отправки СМС: Номер {user.phone_number}, Ошибка {response["message"]}')
-
-    return False
 
 
 def send_authentication_sms_code_to_user(user: User, **kwargs) -> mainsms.SMS | None:

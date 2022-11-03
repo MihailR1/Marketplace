@@ -1,33 +1,9 @@
-import json
-
 import requests
 from loguru import logger
 
 from webapp.config import UNISENDER_API_KEY, SEND_EMAIL_URL, EMAIL_SENDER_NAME, SENDER_EMAIL
 from webapp.marketplace.models import ShoppingOrder
 from webapp.user.models import User
-from webapp.user.enums import EmailEventsForUser
-
-
-def send_email(event: EmailEventsForUser, user: User, **kwargs) -> None:
-    event_to_email_event_handler_function_mapper = {
-        EmailEventsForUser.hello_letter: send_hello_email_to_user_after_registration,
-        EmailEventsForUser.order_successfully_paid: send_email_about_successfully_paid_order,
-        EmailEventsForUser.letter_with_account_password: send_email_with_generated_password,
-    }
-    response = event_to_email_event_handler_function_mapper[event](user, **kwargs)
-
-    if response:
-        try:
-            response_serialize = response.json()
-        except json.JSONDecodeError as error:
-            logger.exception(f'Получен ответ от почтового сервиса с ошибкой: {error}')
-
-        error = response_serialize.get('error', None)
-        if error:
-            logger.error(f'Ошибка в формировании запроса отправки email: {error}')
-
-        logger.info(f'Письмо успешно отправлено на почту: {user.email}')
 
 
 def send_hello_email_to_user_after_registration(user: User, **kwargs) -> requests.Response | None:
