@@ -48,8 +48,3 @@ def send_sms(event, user: User, **kwargs) -> bool:
             logger.info(f'Ошибка во время отправки СМС: Номер {user.phone_number}, Ошибка {response["message"]}')
 
     return False
-
-
-@celery.task
-def add(x, y):
-    print(x + y)
