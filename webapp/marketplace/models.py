@@ -26,8 +26,8 @@ class Product(db.Model):
     description = db.Column(db.Text)
     brand_name = db.Column(db.String(40))
     color = db.Column(db.String(20))
-    gender = db.Column(db.String(7))
-    size = db.Column(db.String(10))
+    gender = db.Column(db.String(13))
+    size = db.Column(db.String(15))
     quantity = db.Column(db.Integer, index=True, default=100)
 
     def __repr__(self):

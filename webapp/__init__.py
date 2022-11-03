@@ -12,6 +12,7 @@ from webapp.marketplace.forms import SearchForm
 from webapp.user.models import User
 from webapp.user.views import blueprint as user_blueprint
 from webapp.services.service_cart import get_number_of_unique_products_in_cart
+from webapp.services.service_count import count_favorite_products_current_user
 
 
 def create_app():
@@ -38,6 +39,7 @@ def create_app():
         form_search = SearchForm()
         form_search.search_input.data = ''
         unique_products_in_cart = get_number_of_unique_products_in_cart()
+        number_of_favorite_products = count_favorite_products_current_user
 
         @cache.cached(timeout=18000, key_prefix='dropdown_categories')
         def dropdown_categories():
@@ -47,6 +49,7 @@ def create_app():
 
         return dict(dropdown_categories=dropdown_categories,
                     search_form=form_search,
-                    number_products_in_cart=unique_products_in_cart)
+                    number_products_in_cart=unique_products_in_cart,
+                    count_favorite_products_current_user=number_of_favorite_products)
 
     return app

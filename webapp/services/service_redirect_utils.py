@@ -12,7 +12,7 @@ def redirect_back(default='marketplace.index', **kwargs):
     for target in request.args.get('next'), request.referrer:
         if not target:
             continue
-        if target.endswith('users/login'):
+        if target.endswith('users/login_register'):
             return redirect(url_for(default))
         if is_safe_url(target):
             return redirect(target)

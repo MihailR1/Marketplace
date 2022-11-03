@@ -13,9 +13,11 @@
                     <div class="col-xl-5 col-lg-4 d-none d-lg-block">
                         <div class="subscribe__form">
                             <form action="{{ url_for('marketplace.search_result') }}" method="POST">
+                                {{ search_form.hidden_tag() }}
                                 {{ search_form.search_input() }}
                                 <button class="button"><i class="far fa-search">{{ search_form.submit() }}</i></button>
                             </form>
+                            <div id="search_box-result"></div>
                         </div>
                     </div>
                     <div class="col-xl-4 col-lg-5 col-md-8 col-sm-8">
@@ -26,7 +28,12 @@
                                         <i class="flaticon-user"></i>
                                         <span class="text">
                                         <span class="sub">Профиль</span>
-                                        Привет, <br>  {{ current_user.email }}</span>
+                                            {% if current_user.full_name %}
+                                                Привет, <br>  {{ current_user.full_name }}
+                                                {% else %}
+                                                Мой профиль
+                                            {% endif %}
+                                        </span>
                                     </a>
                                 {% else %}
                                     <a class="icon-link" href="{{ url_for('user.login_or_register_user') }}">
@@ -43,28 +50,21 @@
                                 <span class="count">{{ count_favorite_products_current_user() }}</span>
                                 <span class="text">
                                 <span class="sub">Избранное</span>
-                                Твой список желаний</span>
+                                Мой список желаний</span>
                                 </a>
                             </div>
                             <div class="block-cart action">
                                 <a class="icon-link" href="{{ url_for('marketplace.cart') }}">
                                     <i class="flaticon-shopping-bag"></i>
-                                    <span class="count">
+                                    <span class="count" id="cart_icon">
                                         {% if number_products_in_cart %}
                                             {{ number_products_in_cart }}
                                         {% else %}
                                             0
                                         {% endif %}
                                     </span>
-                                    {% if products_in_cart %}
                                         <span class="text">
-                                        <span class="sub">Ваша корзина:</span>
-                                        {{ count_total_money }} руб.</span>
-                                    {% else %}
-                                        <span class="text">
-                                        <span class="sub">Ваша корзина:</span>
-                                        0 руб.</span>
-                                    {% endif %}
+                                        <span class="sub">Корзина</span></span>
                                 </a>
                             </div>
                         </div>
@@ -76,10 +76,12 @@
     <div class="header__bottom">
         <div class="container">
             <div class="row g-0 align-items-center">
-                <div class="col-lg-3">                        
+                <div class="col-lg-3">
                     <div class="cat__menu-wrapper side-border d-none d-lg-block">
                         <div class="cat-toggle">
-                            <button type="button" class="cat-toggle-btn cat-toggle-btn-1"><i class="fal fa-bars"></i>Категории товаров</button>
+                            <button type="button" class="cat-toggle-btn cat-toggle-btn-1"><i class="fal fa-bars"></i>Категории
+                                товаров
+                            </button>
                             <div class="cat__menu">
                                 {% include "category_menu.html" %}
                             </div>
@@ -87,23 +89,24 @@
                     </div>
                 </div>
                 <div class="col-lg-6 col-md-6 col-3">
-                  <div class="header__bottom-left d-flex d-xl-block align-items-center">
-                    <div class="side-menu d-lg-none mr-20">
-                      <button type="button" class="side-menu-btn offcanvas-toggle-btn"><i class="fas fa-bars"></i></button>
+                    <div class="header__bottom-left d-flex d-xl-block align-items-center">
+                        <div class="side-menu d-lg-none mr-20">
+                            <button type="button" class="side-menu-btn offcanvas-toggle-btn"><i class="fas fa-bars"></i>
+                            </button>
+                        </div>
+                        <div class="main-menu d-none d-lg-block">
+                            <nav>
+                                <ul>
+                                    <li>
+                                        <a href="/">Home</a>
+                                    </li>
+                                    <li>
+                                        <a href="#">О нас</a>
+                                    </li>
+                                </ul>
+                            </nav>
+                        </div>
                     </div>
-                    <div class="main-menu d-none d-lg-block">
-                        <nav>
-                            <ul>
-                                <li>
-                                    <a href="/">Home</a>
-                                </li>
-                                <li>
-                                    <a href="#">О нас</a>
-                                </li>
-                            </ul>
-                        </nav>
-                    </div>
-                  </div>
                 </div>
             </div>
         </div>

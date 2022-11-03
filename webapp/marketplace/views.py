@@ -20,7 +20,6 @@ from webapp.services.service_payment_process import prepare_link_for_payment, is
 from webapp.services.service_send_email import send_email
 from webapp.services.service_sorting import process_sorting_product_types
 from webapp.services.service_send_sms import generate_six_digits_code, delete_symbols_from_phone_number
-from webapp.services.service_count import count_favorite_products_current_user
 
 blueprint = Blueprint('marketplace', __name__)
 
@@ -37,19 +36,17 @@ def index():
             products = process_sorting_product_types(user_sorting_type)
         except ValueError:
             flash("Не верный выбор сортировки")
-            products = Product.query.all()
+            products = Product.query.limit(20)
     else:
-        products = Product.query.all()
-    
+        products = Product.query.limit(20)
 
     return render_template(
-        'marketplace/index.html', 
-        page_title=title, 
+        'marketplace/index.html',
+        page_title=title,
         products=products,
         products_in_cart=products_in_cart,
         is_user_add_product_to_favorite=is_user_add_product_to_favorite,
         sorting_product_form=sorting_product_form,
-        count_favorite_products_current_user=count_favorite_products_current_user
     )
 
 
@@ -174,12 +171,11 @@ def cart():
         session['count_total_money'] = count_total_money
 
     return render_template(
-        'marketplace/cart.html', 
+        'marketplace/cart.html',
         page_title=title,
         products_in_cart=products_in_cart,
         count_all_products=count_all_products,
         count_total_money=count_total_money,
-        count_favorite_products_current_user=count_favorite_products_current_user
     )
 
 
@@ -204,12 +200,11 @@ def checkout_page():
     count_total_money = session.get('count_total_money', 0)
 
     return render_template(
-        'marketplace/checkout.html', 
-        page_title=title, 
+        'marketplace/checkout.html',
+        page_title=title,
         form=form,
-        count_all_products=count_all_products, 
+        count_all_products=count_all_products,
         count_total_money=count_total_money,
-        count_favorite_products_current_user=count_favorite_products_current_user
     )
 
 
@@ -359,12 +354,11 @@ def product_page(product_id):
         abort(404)
 
     return render_template(
-        'marketplace/product_page.html', 
+        'marketplace/product_page.html',
         page_title='Карточка товара',
-        product=product, 
+        product=product,
         products_in_cart=products_in_cart,
         is_user_add_product_to_favorite=is_user_add_product_to_favorite,
-        count_favorite_products_current_user=count_favorite_products_current_user
     )
 
 
@@ -378,9 +372,9 @@ def category_page(category_id):
     if children_categories:
         categories_id = [category.id for category in children_categories]
         categories_id.append(category_id)
-        products = Product.query.filter(Product.category_id.in_(categories_id)).all()
+        products = Product.query.filter(Product.category_id.in_(categories_id)).limit(30)
     else:
-        products = Product.query.filter(Product.category_id == category_id).all()
+        products = Product.query.filter(Product.category_id == category_id).limit(30)
     if not category:
         abort(404)
 
@@ -390,7 +384,6 @@ def category_page(category_id):
         products=products,
         products_in_cart=products_in_cart,
         is_user_add_product_to_favorite=is_user_add_product_to_favorite,
-        count_favorite_products_current_user=count_favorite_products_current_user
     )
 
 
@@ -400,10 +393,9 @@ def add_product():
     title = 'Добавить товар'
     form = AddNewProductForm()
     return render_template(
-        'marketplace/add_product.html', 
-        page_title=title, 
+        'marketplace/add_product.html',
+        page_title=title,
         form=form,
-        count_favorite_products_current_user=count_favorite_products_current_user
     )
 
 
@@ -486,7 +478,7 @@ def favorite_page():
     """Страница с понравившимся товаром пользователя"""
 
     title = "Избранное"
-    
+
     if current_user.is_authenticated:
         products = Product.query.filter(Product.id == UserFavoriteProduct.product_id,
                                         UserFavoriteProduct.user_id == current_user.id).all()
@@ -498,7 +490,6 @@ def favorite_page():
             products=products,
             is_user_add_product_to_favorite=is_user_add_product_to_favorite,
             products_in_cart=products_in_cart,
-            count_favorite_products_current_user=count_favorite_products_current_user
         )
     else:
         flash("Чтобы перейти в список желаемого, необходимо авторизоваиться")

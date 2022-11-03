@@ -52,9 +52,9 @@ function query_to_db(product_id, quantity) {
             document.getElementById('productOut_' + product_id).style.display = 'none';
         }
         if (response_info['unique_products'] > 0) {
-            document.getElementById('cart_icon').textContent = 'Корзина (' + response_info['unique_products'] + ')'
+            document.getElementById('cart_icon').textContent = response_info['unique_products']
         } else {
-            document.getElementById('cart_icon').textContent = 'Корзина'
+            document.getElementById('cart_icon').textContent = 0
         }
     });
 }

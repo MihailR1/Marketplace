@@ -9,7 +9,6 @@ from webapp.services.service_send_email import send_email
 from webapp.services.service_send_sms import delete_symbols_from_phone_number, generate_six_digits_code, send_sms
 from webapp.services.service_redirect_utils import redirect_back
 from webapp.services.service_cart import save_products_into_db_from_session_cart
-from webapp.services.service_count import count_favorite_products_current_user
 
 blueprint = Blueprint('user', __name__, url_prefix='/users')
 
@@ -26,12 +25,11 @@ def login_or_register_user():
     form_register = RegistrationForm()
 
     return render_template(
-        'user/login_register.html', 
-        title_login=title_login, 
-        title_register=title_register, 
-        form_login=form_login, 
+        'user/login_register.html',
+        title_login=title_login,
+        title_register=title_register,
+        form_login=form_login,
         form_register=form_register,
-        count_favorite_products_current_user=count_favorite_products_current_user
     )
 
 
@@ -77,7 +75,7 @@ def logout():
 @blueprint.route('/process_reg', methods=['POST'])
 def process_reg():
     form = RegistrationForm()
-    
+
     if form.validate_on_submit():
         new_user = User(
             email=form.email.data,
@@ -106,10 +104,9 @@ def profile_user():
     title = 'Профиль пользователя'
     user_all_info = User.query.filter(User.id == current_user.id)
     return render_template(
-        'user/profile_user.html', 
+        'user/profile_user.html',
         title=title,
         user_all_info=user_all_info,
-        count_favorite_products_current_user=count_favorite_products_current_user
     )
 
 
@@ -119,10 +116,9 @@ def edit_profile_user():
     title = 'Редактирование профиля'
     form = UpdateDataProfileUserForm()
     return render_template(
-        'user/edit_profile_user.html', 
+        'user/edit_profile_user.html',
         title=title,
         form=form,
-        count_favorite_products_current_user=count_favorite_products_current_user
     )
 
 
