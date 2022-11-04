@@ -13,7 +13,7 @@ from webapp.user.models import User
 from webapp.user.views import blueprint as user_blueprint
 from webapp.services.service_cart import get_number_of_unique_products_in_cart
 from webapp.services.service_count import count_favorite_products_current_user
-from celery_app import celery
+from webapp.celery_app import celery
 
 
 def create_app():

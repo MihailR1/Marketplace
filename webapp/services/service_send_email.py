@@ -1,30 +1,38 @@
-import requests
 from loguru import logger
 
-from webapp.config import UNISENDER_API_KEY, SEND_EMAIL_URL, EMAIL_SENDER_NAME, SENDER_EMAIL
+from webapp.config import UNISENDER_API_KEY, EMAIL_SENDER_NAME, SENDER_EMAIL
 from webapp.marketplace.models import ShoppingOrder
 from webapp.user.models import User
+from webapp.user.enums import EmailEventsForUser
+from webapp.user.tasks import send_async_email_using_unisender
 
 
-def send_hello_email_to_user_after_registration(user: User, **kwargs) -> requests.Response | None:
+def send_email(event: EmailEventsForUser, user: User, **kwargs) -> None:
+    event_to_email_event_handler_function_mapper = {
+        EmailEventsForUser.hello_letter: send_hello_email_to_user_after_registration,
+        EmailEventsForUser.order_successfully_paid: send_email_about_successfully_paid_order,
+        EmailEventsForUser.letter_with_account_password: send_email_with_generated_password,
+    }
+    event_to_email_event_handler_function_mapper[event](user, **kwargs)
+
+
+def send_hello_email_to_user_after_registration(user: User, **kwargs) -> None:
     logger.info('Запустили функцию формирования приветственного email')
     email_subject = 'Подтверждение регистрации на сайте Super1Site'
     email_body = 'Спасибо за регистрацию на нашем сайт'
     user_email = user.email
-    response = send_email_using_unisender(user_email, email_subject, email_body)
-    return response
+    prepare_email_for_unisender(user_email, email_subject, email_body)
 
 
-def send_email_about_successfully_paid_order(user: User, **kwargs) -> requests.Response | None:
+def send_email_about_successfully_paid_order(user: User, **kwargs) -> None:
     logger.info('Запустили функцию формирования email с уведомлением об успешной оплате')
     shopping_order = ShoppingOrder.query.filter(ShoppingOrder.user_id == user.id).all()[-1]
     email_subject = 'Заказ успешно оплачен'
     email_body = f'Заказ №{shopping_order.order_number} на сумму {shopping_order.amount} руб. успешно оплачен'
-    response = send_email_using_unisender(user.email, email_subject, email_body)
-    return response
+    prepare_email_for_unisender(user.email, email_subject, email_body)
 
 
-def send_email_with_generated_password(user: User, **kwargs) -> requests.Response | None:
+def send_email_with_generated_password(user: User, **kwargs) -> None:
     logger.info('Запустили функцию формирования email с данными для входа')
     user_password = kwargs['password']
     email_subject = 'Данные для входа на сайт'
@@ -34,11 +42,10 @@ def send_email_with_generated_password(user: User, **kwargs) -> requests.Respons
     Пароль: {user_password}<br>
     Ссылка на сайт: <a href="https://super1site.ru/users/login">Авторизоваться</a>
     '''
-    response = send_email_using_unisender(user.email, email_subject, email_body)
-    return response
+    prepare_email_for_unisender(user.email, email_subject, email_body)
 
 
-def send_email_using_unisender(user_email, email_subject, email_body) -> requests.Response | None:
+def prepare_email_for_unisender(user_email, email_subject, email_body) -> None:
     email_unsubscribe_id = 1
     params_send_email = {
         'format': 'json',
@@ -50,9 +57,4 @@ def send_email_using_unisender(user_email, email_subject, email_body) -> request
         'subject': email_subject,
         'body': email_body,
     }
-    try:
-        response = requests.get(SEND_EMAIL_URL, params=params_send_email)
-    except requests.RequestException as error:
-        logger.exception(f'Ошибка во время отправки email: {error}')
-        response = None
-    return response
+    send_async_email_using_unisender.delay(params_send_email)
