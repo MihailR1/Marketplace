@@ -5,10 +5,10 @@ from webapp.db import db
 from webapp.user.forms import LoginForm, RegistrationForm, SmsAuthForm, UpdateDataProfileUserForm
 from webapp.user.models import User
 from webapp.user.enums import EmailEventsForUser, SmsEventsForUser, UserRole
-from webapp.services.service_send_email import send_email
 from webapp.services.service_send_sms import delete_symbols_from_phone_number, generate_six_digits_code, send_sms
 from webapp.services.service_redirect_utils import redirect_back
 from webapp.services.service_cart import save_products_into_db_from_session_cart
+from webapp.services.service_send_email import send_email
 
 blueprint = Blueprint('user', __name__, url_prefix='/users')
 
@@ -84,8 +84,9 @@ def process_reg():
         new_user.set_password(form.password.data)
         db.session.add(new_user)
         db.session.commit()
-        flash('Вы успешно зарегистрировались')
+        flash('Вы успешно зарегистрировались и авторизовались')
         send_email(EmailEventsForUser.hello_letter, new_user)
+        login_user(new_user)
         return redirect(url_for('marketplace.index'))
 
     else:
@@ -136,7 +137,7 @@ def process_update_data_user():
         flash('Вы успешно изменили свои данные')
         return redirect(url_for('user.profile_user'))
     else:
-        flash("Чтобы изменить свои данные, необходимо авторизоваиться или зарегистрироваться")
+        flash("Чтобы изменить свои данные, необходимо авторизоваться или зарегистрироваться")
         return redirect(request.referrer)
 
 

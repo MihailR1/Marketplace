@@ -20,8 +20,8 @@
                                 <tbody>
                                     {% for product in products %}
                                         <tr>
-                                            <td class="product-thumbnail"><a href="shop-details.html"><img src="{{ product.photos_path }}" alt="{{ product.name }}"></a></td>
-                                            <td class="product-name"><a href="shop-details.html">{{ product.name }}</a></td>
+                                            <td class="product-thumbnail"><a href="{{ url_for('marketplace.product_page', product_id=product.id) }}"><img src="{{ url_for('static', filename=product.photos[0].photos_path) }}" alt="{{ product.name }}"></a></td>
+                                            <td class="product-name"><a href="{{ url_for('marketplace.product_page', product_id=product.id) }}">{{ product.name }}</a></td>
                                             <td class="product-price"><span class="amount">{{ product.price }} руб.</span></td>
                                             <td class="product-quantity">
                                                 <button class="tp-btn-h1" type="submit">Добавить в корзину</button>

@@ -95,12 +95,15 @@ def save_photos_in_path(photos_url, product_id) -> list:
             logger.exception(f'Ошибка обращения к фотографии продукта {error}')
             continue
 
-        product_path = os.path.join(UPLOAD_PATH, f'product_{product_id}')
+        file_name = f'{index}.{photo_extension}'
+        product_local_path = f'product_{product_id}'
+        product_path = os.path.join(UPLOAD_PATH, product_local_path)
         os.makedirs(product_path, exist_ok=True)
-        target_name_and_path_for_product = os.path.join(product_path, f'{index}.{photo_extension}')
-        list_with_photos_path.append(target_name_and_path_for_product)
+        saving_path_for_product = os.path.join(product_path, file_name)
+        photo_path_for_product = os.path.join('media', product_local_path, file_name)
+        list_with_photos_path.append(photo_path_for_product)
 
-        with open(target_name_and_path_for_product, 'wb') as photo_path:
+        with open(saving_path_for_product, 'wb') as photo_path:
             photo_path.write(photo_response.content)
 
     return list_with_photos_path

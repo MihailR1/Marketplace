@@ -2,7 +2,8 @@ from uuid import uuid4
 from datetime import datetime
 
 import requests
-from flask import Blueprint, flash, render_template, redirect, url_for, abort, request, jsonify, session, Markup, Response
+from flask import (Blueprint, flash, render_template, redirect, url_for, abort, request, jsonify, session, Markup,
+                   Response)
 from flask_login import current_user, login_required
 
 from webapp.db import db
@@ -17,9 +18,9 @@ from webapp.services.service_cart import (get_product_by_id, search_products_by_
                                           save_unauthenticated_user_data_in_session)
 from webapp.services.service_favorite_product import is_user_add_product_to_favorite
 from webapp.services.service_payment_process import prepare_link_for_payment, is_order_paid, verify_payment
-from webapp.services.service_send_email import send_email
 from webapp.services.service_sorting import process_sorting_product_types
 from webapp.services.service_send_sms import generate_six_digits_code, delete_symbols_from_phone_number
+from webapp.services.service_send_email import send_email
 
 blueprint = Blueprint('marketplace', __name__)
 
@@ -292,7 +293,7 @@ def payment_process(user_id):
 
 @blueprint.route('/payment_status_from_yoomoney', methods=['POST'])
 def payment_status_from_yoomoney():
-    payment_number = request.get('label', None)
+    payment_number = request.form.get('label', None)
 
     if payment_number:
         is_payment_verified = verify_payment(request)
