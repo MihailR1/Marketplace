@@ -7,12 +7,13 @@ from webapp.celery_app import celery
 from webapp.config import SEND_EMAIL_URL
 
 
-@celery.task
-def send_async_email_using_unisender(params_send_email):
+@celery.task(bind=True, retry_backoff=60, max_retries=3)
+def send_async_email_using_unisender(self, params_send_email):
     try:
         response = requests.get(SEND_EMAIL_URL, params=params_send_email)
     except requests.RequestException as error:
-        logger.exception(f'Ошибка во время отправки email: {error}')
+        logger.exception(f'Ошибка во время отправки email: {error}. Попытка: {self.request.retries} из {self.max_retries}')
+        self.retry(exc=error)
         response = None
 
     if response:

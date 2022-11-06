@@ -178,7 +178,7 @@ button:focus {
 }
 
 .capitalize {
-  text-transform: capitalize;
+
 }
 
 input {
@@ -633,7 +633,7 @@ input {
 .st-btn-3 {
   font-size: 14px;
   font-weight: 400;
-  text-transform: capitalize;
+
   background-color: #ffffff;
   padding: 8px 44px 8px 44px;
   color: #5aab19;
@@ -749,7 +749,7 @@ input {
   margin-bottom: 0;
   padding: 20px 40px;
   text-align: center;
-  text-transform: capitalize;
+
   touch-action: manipulation;
   transition: 0.3s;
   vertical-align: middle;
@@ -1328,7 +1328,7 @@ input {
   font-weight: 400;
   background: #fcbe00;
   border-radius: 0 4px 4px 0;
-  text-transform: capitalize;
+
 }
 .header__search-box .button-2 {
   top: 5px;
@@ -1780,7 +1780,7 @@ input {
   position: relative;
   padding: 5px 25px;
   font-size: 14px;
-  text-transform: capitalize;
+
   color: #666;
   font-weight: 400;
 }
@@ -1871,7 +1871,7 @@ input {
   display: inline-block;
   width: auto;
   font-weight: 400;
-  text-transform: capitalize;
+
 }
 .main-menu ul li ul.megamenu-1 li ul li a:hover {
   color: #fcbe00;
@@ -1921,7 +1921,7 @@ input {
 }
 .main-menu ul li .mega-menu ul > li ul li a {
   font-size: 14px;
-  text-transform: capitalize;
+
   font-weight: 400;
   display: block;
   padding: 0;
@@ -2065,7 +2065,6 @@ input {
   position: relative;
   display: inline-block;
   padding: 10px 20px;
-  text-transform: capitalize;
   color: #1F2024;
   border-bottom: 1px solid #e5e5e5;
   font-weight: 500;
@@ -2140,7 +2139,7 @@ input {
 .cat__menu ul li > ul.submenu li a {
   padding: 9px 25px;
   font-size: 13px;
-  text-transform: capitalize;
+
   border: 0;
 }
 .cat__menu ul li > ul.submenu li:last-child a {
@@ -3297,7 +3296,7 @@ input {
 .product__nav-tab .nav-link {
   font-size: 14px;
   color: #222;
-  text-transform: capitalize;
+
   padding: 0;
   background: transparent;
   border: none;
@@ -4416,7 +4415,7 @@ input {
 .des-sm-fet span {
   display: block;
   font-size: 18px;
-  text-transform: capitalize;
+
 }
 
 .product__details-des span {
@@ -4513,7 +4512,7 @@ input {
 }
 .review-details-content .name-date h6 {
   font-size: 16px;
-  text-transform: capitalize;
+
 }
 .review-details-content .name-date h6 span {
   color: #999;
@@ -5339,7 +5338,7 @@ input {
   padding-bottom: 8px;
   margin-bottom: 8px;
   margin-right: 5px;
-  text-transform: capitalize;
+
   border: 0;
   transition: 0.3s;
 }
@@ -5891,7 +5890,7 @@ input {
   text-align: center;
   line-height: 60px;
   color: #ffffff;
-  text-transform: capitalize;
+
   font-size: 16px;
   border: 0;
   margin-top: 10px;
@@ -5933,7 +5932,7 @@ input {
 .table-content table td.product-name {
   font-size: 16px;
   font-weight: 400;
-  text-transform: capitalize;
+
 }
 
 .table-content table td.product-name a:hover {
@@ -6023,7 +6022,7 @@ input {
 .cart-page-total > h2 {
   font-size: 25px;
   margin-bottom: 20px;
-  text-transform: capitalize;
+
 }
 
 .cart-page-total > ul {
@@ -6674,7 +6673,7 @@ p.checkout-coupon input[type=text]::placeholder {
 .footer__widget-title h4 {
   font-size: 18px;
   color: #ffffff;
-  text-transform: capitalize;
+
   margin-bottom: 18px;
   font-weight: 500;
 }
@@ -6900,6 +6899,8 @@ p.checkout-coupon input[type=text]::placeholder {
     font-weight: 300;
     font-size: 16px;
     margin: 5px;
+    border-bottom: solid 1px #0068c9;
+    color: #0068c9;
 }
 
 .search_result-name b {

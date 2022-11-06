@@ -22,7 +22,7 @@
                                 <tbody>
                                     {% for product, quantity in products_in_cart.items() %}
                                         <tr>
-                                            <td class="product-thumbnail"><a href="{{ url_for('marketplace.product_page', product_id=product.id) }}"><img src="{% if product.photos %}{{ product.photos[0].photos_path }}{% endif %}" class="card-img-top"
+                                            <td class="product-thumbnail"><a href="{{ url_for('marketplace.product_page', product_id=product.id) }}"><img src="{{ url_for('static', filename=product.photos[0].photos_path) }}" class="card-img-top"
                                                 alt="{{ product.name }}"></a></td>
                                             <td class="product-name"><a href="{{ url_for('marketplace.product_page', product_id=product.id) }}">{{ product.name }}</a></td>
                                             <td class="product-price"><span class="amount">{{ product.price }} руб.</span></td>

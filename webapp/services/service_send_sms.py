@@ -34,7 +34,7 @@ def send_sms(event: SmsEventsForUser, user: User, **kwargs) -> bool:
     return False
 
 
-def send_authentication_sms_code_to_user(user: User, **kwargs) -> mainsms.SMS | None:
+def send_authentication_sms_code_to_user(user: User, **kwargs):
     generated_code = kwargs['generated_code']
     if generated_code:
         sms_text = f'Пароль для входа на сайт: {generated_code}'
@@ -43,7 +43,7 @@ def send_authentication_sms_code_to_user(user: User, **kwargs) -> mainsms.SMS | 
         return sms_result
 
 
-def send_sms_using_mainsms(user_phone, sms_text) -> mainsms.SMS | None:
+def send_sms_using_mainsms(user_phone, sms_text):
     sms = mainsms.SMS(MAINSMS_PROJECT_NAME, MAINSMS_API_KEY)
     try:
         status_sent_sms = sms.sendSMS(user_phone, sms_text, test=0)

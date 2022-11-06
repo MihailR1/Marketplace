@@ -293,7 +293,7 @@ def payment_process(user_id):
 
 @blueprint.route('/payment_status_from_yoomoney', methods=['POST'])
 def payment_status_from_yoomoney():
-    payment_number = request.get('label', None)
+    payment_number = request.form.get('label', None)
 
     if payment_number:
         is_payment_verified = verify_payment(request)
