@@ -1,0 +1,10 @@
+language: python
+python:
+  - "3.10"
+install:
+  - pip install -r requirements.txt
+branches:
+  only:
+    - main
+script:
+  - python3 -m pytest || python -m pytest

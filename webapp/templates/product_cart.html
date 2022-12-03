@@ -4,7 +4,7 @@
             <div class="product__thumb fix">
                 <div class="product-image w-img">
                     <a href="{{ url_for('marketplace.product_page', product_id=product.id) }}">
-                        <img src="{{ url_for('static', filename=product.photos[0].photos_path) }}" class="card-img-top"
+                        <img src="{% if product.photos %}{{ url_for('static', filename=product.photos[0].photos_path) }}{% endif %}" class="card-img-top"
                      alt="{{ product.name }}"></a>
                 </div>
                 <div class="product-action">
